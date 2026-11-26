@@ -4,275 +4,249 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pengundian Nomor Urut Calon Kepala Desa Kebondowo 2026</title>
-    <link rel="stylesheet" href="style.css?v=5">
+    <link rel="stylesheet" href="style.css?v=10">
 </head>
-<body class="bg-grid flex flex-col justify-between">
+<body class="bg-grid">
 
     <!-- HEADER -->
     <header>
-        <div>
-            <div class="flex items-center gap-3">
-                <div class="w-10 font-futuristic">K26</div>
-                <div>
+        <div class="header-inner">
+            <div class="brand-group">
+                <div class="logo-box font-futuristic">K26</div>
+                <div class="brand-text">
                     <h1 class="font-futuristic">PILKADES <span>KEBONDOWO</span> 2026</h1>
                     <p>Sistem Pengundian Nomor Urut Digital</p>
                 </div>
             </div>
 
-            <div class="flex items-center gap-4">
-                <div class="flex items-center gap-2">
-                    <span class="text-slate-400 text-xs">Metode Acak:</span>
+            <div class="controls-group">
+                <div class="algo-box">
+                    <span class="label-muted text-xs">Metode Acak:</span>
                     <select id="rngVersion">
                         <option value="crypto">Versi 1: Crypto CSPRNG (Aman)</option>
                         <option value="math">Versi 2: Standard PRNG</option>
                     </select>
                 </div>
-                
-                <button type="button" onclick="toggleFullScreen()" title="Layar Penuh">
-                    <svg xmlns="http://w3.org" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                    </svg>
+
+                <!-- Tombol Ganti Tema Terang / Gelap -->
+                <button type="button" id="btnThemeToggle" onclick="toggleTheme()" title="Ganti Tema Terang/Gelap">
+                    ☀️ Tema Terang
+                </button>
+
+                <!-- Tombol Fullscreen Aman -->
+                <button type="button" id="btnFullscreen" onclick="toggleFullScreen()" title="Layar Penuh">
+                    ⛶ Layar Penuh
                 </button>
             </div>
         </div>
 
         <!-- Stepper Navigasi -->
-        <div>
-            <div class="font-futuristic">
-                <div id="step-ind-1" class="text-cyan-400 font-bold">
-                    <span>1. KEHADIRAN CALON</span>
-                </div>
-                <div class="h-px"></div>
-                <div id="step-ind-2" class="text-slate-500">
-                    <span>2. UNDIAN 1: URUTAN AMBIL</span>
-                </div>
-                <div class="h-px"></div>
-                <div id="step-ind-3" class="text-slate-500">
-                    <span>3. UNDIAN 2: NOMOR URUT</span>
-                </div>
+        <div class="stepper-bar">
+            <div class="stepper-inner font-futuristic">
+                <div id="step-ind-1" class="step-active">1. KEHADIRAN CALON</div>
+                <div class="step-line"></div>
+                <div id="step-ind-2" class="step-muted">2. UNDIAN 1: URUTAN AMBIL</div>
+                <div class="step-line"></div>
+                <div id="step-ind-3" class="step-muted">3. UNDIAN 2: NOMOR URUT</div>
             </div>
         </div>
     </header>
 
     <!-- KONTEN UTAMA -->
     <main>
-
-        <!-- HALAMAN 1: BERANDA & ENTRI KEHADIRAN -->
+        <!-- HALAMAN 1: KEHADIRAN CALON -->
         <section id="page-1" class="page-section active">
-            <div class="text-center mb-8">
-                <span class="text-cyan-400 text-xs font-futuristic">
-                    Panitia Pemilihan Kepala Desa Kebondowo
-                </span>
-                <h2 class="font-futuristic mt-3">
-                    REGISTRASI URUTAN KEHADIRAN
-                </h2>
-                <p class="text-slate-500 mt-3">
-                    Masukkan nama Calon Kepala Desa sesuai urutan waktu kehadiran di lokasi acara.
-                </p>
+            <div class="text-center section-head">
+                <span class="badge-tag font-futuristic">Panitia Pemilihan Kepala Desa Kebondowo</span>
+                <h2 class="font-futuristic">REGISTRASI URUTAN KEHADIRAN</h2>
+                <p class="label-muted">Masukkan nama Calon Kepala Desa sesuai urutan waktu kehadiran di lokasi acara.</p>
             </div>
 
-            <div class="grid lg:grid-cols-12">
-                <div class="lg:col-span-5 glass-panel">
-                    <h3 class="font-futuristic text-cyan-400 mb-4">+ Tambah Calon Hadir</h3>
+            <div class="grid-12">
+                <div class="col-5 glass-panel">
+                    <h3 class="font-futuristic accent-cyan mb-3">+ Tambah Calon Hadir</h3>
                     <form onsubmit="addCandidate(event)">
-                        <div>
-                            <label class="text-xs text-slate-400">NAMA LENGKAP CALON</label>
-                            <input type="text" id="candidateNameInput" required placeholder="Contoh: Drs. H. Ahmad Fauzi">
-                        </div>
-                        <button type="submit">
+                        <label class="label-muted text-xs">NAMA LENGKAP CALON</label>
+                        <input type="text" id="candidateNameInput" required placeholder="Contoh: Drs. H. Ahmad Fauzi">
+                        <button type="submit" class="btn-primary w-full">
                             CATAT KEHADIRAN <span class="key-badge">ENTER ↵</span>
                         </button>
                     </form>
 
-                    <div class="mt-6 text-xs text-slate-400">
-                        <p class="mb-4"><strong>2 Versi Sistem Pengacakan:</strong></p>
-                        <p class="mb-4">• <strong class="text-cyan-400">Versi 1 (Crypto CSPRNG):</strong> API kriptografi browser (<code>crypto.getRandomValues</code>).</p>
-                        <p>• <strong class="text-emerald-400">Versi 2 (Standard PRNG):</strong> Algoritma pseudo-random standar (<code>Math.random</code>).</p>
+                    <div class="info-box mt-4 text-xs label-muted">
+                        <p class="mb-2"><strong>2 Versi Sistem Pengacakan:</strong></p>
+                        <p class="mb-2">• <strong class="accent-cyan">Versi 1 (Crypto CSPRNG):</strong> API kriptografi browser (<code>crypto.getRandomValues</code>).</p>
+                        <p>• <strong class="accent-emerald">Versi 2 (Standard PRNG):</strong> Algoritma pseudo-random standar (<code>Math.random</code>).</p>
                     </div>
                 </div>
 
-                <div class="lg:col-span-7 glass-panel">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="font-futuristic">
-                            Daftar Hadir Calon (<span id="candidateCount" class="text-cyan-400">0</span>)
-                        </h3>
-                        <button type="button" onclick="resetAllData()" class="text-xs">Reset Data</button>
-                    </div>
+                <div class="col-7 glass-panel flex-col-between">
+                    <div>
+                        <div class="row-between mb-3">
+                            <h3 class="font-futuristic">Daftar Hadir Calon (<span id="candidateCount" class="accent-cyan">0</span>)</h3>
+                            <button type="button" onclick="resetAllData()" class="btn-danger-sm">Reset Data</button>
+                        </div>
 
-                    <div id="attendanceList">
-                        <div style="text-align:center; padding:2rem; color:#64748b;">
-                            Belum ada calon yang dientri. Minimal 2 calon untuk memulai undian.
+                        <div id="attendanceList" class="scroll-list">
+                            <div class="empty-state">Belum ada calon yang dientri. Minimal 2 calon untuk memulai undian.</div>
                         </div>
                     </div>
 
-                    <div class="mt-6 flex justify-end">
-                        <button type="button" id="btnToPage2" onclick="goToPage(2)" disabled>
+                    <div class="row-end mt-3">
+                        <button type="button" id="btnToPage2" onclick="goToPage(2)" disabled class="btn-primary">
                             LANJUT KE UNDIAN TAHAP 1 <span class="key-badge">ENTER ↵</span>
                         </button>
                     </div>
                 </div>
             </div>
         </section>
-        <!-- HALAMAN 2: UNDIAN 1 (SISTEM REEL/SLOT PER CALON) -->
+        <!-- HALAMAN 2: UNDIAN 1 (MODEL D) -->
         <section id="page-2" class="page-section">
-            <div class="text-center mb-6">
-                <span class="text-amber-400 text-xs font-futuristic">
-                    Tahap Pertama • Eksekusi Langsung Oleh Calon
-                </span>
-                <h2 class="font-futuristic mt-3">
-                    UNDIAN URUTAN PENGAMBILAN NOMOR
-                </h2>
+            <div class="text-center section-head">
+                <span class="badge-tag amber font-futuristic">Tahap Pertama • Eksekusi Langsung Oleh Calon</span>
+                <h2 class="font-futuristic">UNDIAN URUTAN PENGAMBILAN NOMOR</h2>
             </div>
 
-            <div class="grid lg:grid-cols-12">
-                <!-- Panel Kiri: Media Reel Slot Undian 1 -->
-                <div class="lg:col-span-6 glass-panel text-center no-print">
-                    <p class="text-slate-500 text-xs">CALON YANG MENGUNDI (BERDASARKAN KEHADIRAN):</p>
-                    <div class="active-drawer-card amber-card mt-3 mb-4">
-                        <span id="stage1ActiveOrder" class="text-amber-400 font-futuristic text-xs">HADIR #1</span>
+            <div class="grid-12">
+                <div class="col-6 glass-panel text-center">
+                    <p class="label-muted text-xs">CALON YANG MENGUNDI (BERDASARKAN KEHADIRAN):</p>
+                    <div class="active-drawer-card amber-card mt-2 mb-3">
+                        <span id="stage1ActiveOrder" class="accent-amber font-futuristic text-xs">HADIR #1</span>
                         <h3 id="stage1ActiveName">-</h3>
                     </div>
 
                     <div class="slot-machine-box">
-                        <div class="slot-laser-line"></div>
                         <div id="stage1SlotDisplay" class="font-futuristic">0</div>
                     </div>
 
                     <div class="timer-wrapper">
-                        <div class="flex justify-between text-xs font-futuristic mb-2">
-                            <span class="text-slate-400">STATUS: <strong id="stage1StatusText" class="text-amber-400">SIAP</strong></span>
-                            <span class="text-cyan-400">WAKTU: <strong id="stage1CountdownText">5.0</strong> DETIK</span>
+                        <div class="row-between text-xs font-futuristic mb-1">
+                            <span class="label-muted">STATUS: <strong id="stage1StatusText" class="accent-amber">SIAP</strong></span>
+                            <span class="accent-cyan">WAKTU: <strong id="stage1CountdownText">5.0</strong> DETIK</span>
                         </div>
                         <div class="progress-track">
                             <div id="stage1CountdownBar" class="progress-fill amber-fill"></div>
                         </div>
                     </div>
 
-                    <p id="stage1RemainingText" class="text-slate-500 text-xs mt-3 mb-4">Sisa urutan tersedia: -</p>
+                    <p id="stage1RemainingText" class="label-muted text-xs mt-2 mb-3">Sisa urutan tersedia: -</p>
 
-                    <button type="button" id="btnStartStage1" onclick="startStage1Spin()" class="btn-enter-action btn-amber">
+                    <button type="button" id="btnStartStage1" onclick="startStage1Spin()" class="btn-amber w-full">
                         PUTAR URUTAN AMBIL <span class="key-badge">ENTER ↵</span>
                     </button>
                 </div>
 
-                <!-- Panel Kanan: Daftar Hasil Urutan Giliran -->
-                <div class="lg:col-span-6 glass-panel">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="font-futuristic text-amber-400">HASIL URUTAN GILIRAN UNDI</h3>
-                        <span id="stage1AlgoBadge" class="text-slate-500 text-xs"></span>
+                <div class="col-6 glass-panel">
+                    <div class="row-between mb-3">
+                        <h3 class="font-futuristic accent-amber">HASIL URUTAN GILIRAN UNDI</h3>
+                        <span id="stage1AlgoBadge" class="label-muted text-xs"></span>
                     </div>
-
-                    <div id="stage1ResultList"></div>
+                    <div id="stage1ResultList" class="scroll-list"></div>
                 </div>
             </div>
 
-            <div class="mt-8 flex justify-between items-center no-print">
-                <button type="button" onclick="goToPage(1)">← KEMBALI KE KEHADIRAN</button>
-                <div class="flex gap-3">
-                    <button type="button" onclick="resetStage1Only()">Ulangi Undian 1</button>
-                    <button type="button" id="btnToPage3" onclick="goToPage(3)" disabled>
+            <div class="row-between mt-3">
+                <button type="button" onclick="goToPage(1)" class="btn-secondary">← KEMBALI KE KEHADIRAN</button>
+                <div class="row-gap">
+                    <button type="button" onclick="resetStage1Only()" class="btn-secondary">Ulangi Undian 1</button>
+                    <button type="button" id="btnToPage3" onclick="goToPage(3)" disabled class="btn-primary">
                         LANJUT KE UNDIAN 2 <span class="key-badge">ENTER ↵</span>
                     </button>
                 </div>
             </div>
         </section>
 
-        <!-- HALAMAN 3: UNDIAN 2 (KONTER RADAR OTOMATIS 15 DETIK) -->
+        <!-- HALAMAN 3: UNDIAN 2 (MODEL H) -->
         <section id="page-3" class="page-section">
-            <div class="text-center mb-6">
-                <span class="text-emerald-400 text-xs font-futuristic">
-                    Tahap Final • Penentuan Nomor Urut Resmi
-                </span>
-                <h2 class="font-futuristic mt-3">
-                    UNDIAN NOMOR URUT CALON KADES
-                </h2>
+            <div class="text-center section-head">
+                <span class="badge-tag emerald font-futuristic">Tahap Final • Penentuan Nomor Urut Resmi</span>
+                <h2 class="font-futuristic">UNDIAN NOMOR URUT CALON KADES</h2>
             </div>
 
-            <div class="grid lg:grid-cols-12">
-                <!-- Panel Kiri: Konter Modern 15 Detik -->
-                <div class="lg:col-span-6 glass-panel text-center no-print">
-                    <p class="text-slate-500 text-xs">GILIRAN MENGUNDI SAAT INI:</p>
-                    <div class="active-drawer-card mt-3 mb-4">
-                        <span id="activeDrawerOrder" class="text-cyan-400 font-futuristic text-xs">GILIRAN #1</span>
+            <div class="grid-12">
+                <div class="col-6 glass-panel text-center">
+                    <p class="label-muted text-xs">GILIRAN MENGUNDI SAAT INI:</p>
+                    <div class="active-drawer-card mt-2 mb-3">
+                        <span id="activeDrawerOrder" class="accent-cyan font-futuristic text-xs">GILIRAN #1</span>
                         <h3 id="activeDrawerName">-</h3>
                     </div>
 
-                    <!-- Model Konter Baru: Cyber Split Digital Module -->
                     <div class="cyber-counter-module">
                         <div id="counterDisplay" class="font-futuristic">0</div>
                     </div>
 
                     <div class="timer-wrapper">
-                        <div class="flex justify-between text-xs font-futuristic mb-2">
-                            <span class="text-slate-400">STATUS: <strong id="counterStatusText" class="text-cyan-400">SIAP</strong></span>
-                            <span class="text-amber-400">WAKTU: <strong id="countdownText">15.0</strong> DETIK</span>
+                        <div class="row-between text-xs font-futuristic mb-1">
+                            <span class="label-muted">STATUS: <strong id="counterStatusText" class="accent-cyan">SIAP</strong></span>
+                            <span class="accent-amber">WAKTU: <strong id="countdownText">15.0</strong> DETIK</span>
                         </div>
                         <div class="progress-track">
                             <div id="countdownBar" class="progress-fill"></div>
                         </div>
                     </div>
 
-                    <p id="remainingNumbersText" class="text-slate-500 text-xs mt-3 mb-4">Sisa nomor tersedia: -</p>
+                    <p id="remainingNumbersText" class="label-muted text-xs mt-2 mb-3">Sisa nomor tersedia: -</p>
 
-                    <button type="button" id="btnStartCounter" onclick="startCounter()" class="btn-enter-action">
+                    <button type="button" id="btnStartCounter" onclick="startCounter()" class="btn-emerald w-full">
                         MULAI PUTAR KONTER <span class="key-badge">ENTER ↵</span>
                     </button>
                 </div>
 
-                <!-- Panel Kanan: Daftar Hasil -->
-                <div class="lg:col-span-6 glass-panel">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="font-futuristic">HASIL PENETAPAN NOMOR URUT</h3>
-                        <span class="text-emerald-400 font-futuristic text-xs">TAHUN 2026</span>
+                <div class="col-6 glass-panel flex-col-between">
+                    <div>
+                        <div class="row-between mb-3">
+                            <h3 class="font-futuristic">HASIL PENETAPAN NOMOR URUT</h3>
+                            <span class="accent-emerald font-futuristic text-xs">TAHUN 2026</span>
+                        </div>
+                        <div id="finalResultsList" class="scroll-list"></div>
                     </div>
 
-                    <div id="finalResultsList"></div>
-
-                    <div id="completionActions" class="hidden mt-6 flex justify-between items-center">
-                        <span class="text-emerald-400 text-xs">✓ Seluruh calon telah mendapatkan nomor urut.</span>
-                        <button type="button" onclick="window.print()">CETAK HASIL UNDIAN</button>
+                    <div id="completionActions" class="hidden row-between mt-3">
+                        <span class="accent-emerald text-xs font-bold">✓ Seluruh calon telah mendapat nomor urut.</span>
+                        <button type="button" onclick="window.print()" class="btn-primary">CETAK HASIL</button>
                     </div>
                 </div>
             </div>
 
-            <div class="mt-8 flex justify-between items-center no-print">
-                <button type="button" onclick="goToPage(2)">← KEMBALI KE UNDIAN 1</button>
-                <button type="button" onclick="resetStage2Only()">Ulangi Undian Nomor Urut (Tahap 2)</button>
+            <div class="row-between mt-3 no-print">
+                <button type="button" onclick="goToPage(2)" class="btn-secondary">← KEMBALI KE UNDIAN 1</button>
+                <button type="button" onclick="resetStage2Only()" class="btn-secondary">Ulangi Undian Nomor Urut (Tahap 2)</button>
             </div>
         </section>
-
     </main>
 
-    <!-- OVERLAY LAYAR PENUH (MODEL D UNTUK HAL. 2 & MODEL H MAKSIMAL UNTUK HAL. 3) -->
+    <!-- OVERLAY LAYAR PENUH (TERPISAH ANTARA MODEL D DAN MODEL H) -->
     <div id="focusOverlay" class="focus-overlay hidden">
-        <div class="focus-content text-center">
-            <span id="focusStageLabel" class="font-futuristic text-cyan-400">TAHAP PENGUNDIAN</span>
-            <h2 id="focusCandidateName" class="font-futuristic mt-3 mb-4">NAMA CALON</h2>
+        <div class="focus-content">
+            <div class="focus-top">
+                <span id="focusStageLabel" class="font-futuristic accent-cyan">TAHAP PENGUNDIAN</span>
+                <h2 id="focusCandidateName" class="font-futuristic">NAMA CALON</h2>
+            </div>
 
-            <!-- Wadah Model D (Halaman 2) -->
-            <div id="modelDContainer" class="model-d-stage hidden">
+            <!-- Model D: Hanya Tampil di Halaman 2 -->
+            <div id="modelDContainer" class="model-stage hidden">
                 <div id="diamondOuter" class="diamond-outer"></div>
                 <div class="diamond-inner"></div>
                 <div id="digitModelD" class="font-futuristic num-d">0</div>
             </div>
 
-            <!-- Wadah Model H Maksimal (Halaman 3) -->
-            <div id="modelHContainer" class="model-h-stage hidden">
+            <!-- Model H: Hanya Tampil di Halaman 3 -->
+            <div id="modelHContainer" class="model-stage hidden">
                 <div id="ripple1" class="ripple"></div>
                 <div id="ripple2" class="ripple"></div>
                 <div id="ripple3" class="ripple"></div>
                 <div id="digitModelH" class="font-futuristic num-h">0</div>
             </div>
 
-            <div class="timer-wrapper mt-4">
-                <div class="flex justify-between text-xs font-futuristic mb-2">
-                    <span class="text-slate-400">STATUS: <strong id="focusStatusText" class="text-cyan-400">MENGACAK</strong></span>
-                    <span class="text-amber-400">WAKTU: <strong id="focusCountdownText">0.0</strong> DETIK</span>
+            <div class="focus-bottom">
+                <div class="row-between font-futuristic focus-timer-row">
+                    <span class="label-muted">STATUS: <strong id="focusStatusText" class="accent-cyan">MENGACAK</strong></span>
+                    <span class="accent-amber">WAKTU: <strong id="focusCountdownText">0.0</strong> DETIK</span>
                 </div>
-                <div class="progress-track">
+                <div class="progress-track focus-track">
                     <div id="focusCountdownBar" class="progress-fill"></div>
                 </div>
-                <p id="autoSaveNotice" class="text-xs text-emerald-400 mt-3 hidden">📸 Bukti hasil undian otomatis tersimpan ke folder Downloads!</p>
+                <p id="autoSaveNotice" class="accent-emerald text-xs mt-2 hidden">📸 Bukti hasil undian otomatis tersimpan ke folder Downloads!</p>
             </div>
         </div>
     </div>
@@ -280,6 +254,7 @@
     <footer>
         Panitia Pemilihan Kepala Desa Kebondowo Tahun 2026 • Sistem Pengundian Digital Transparan
     </footer>
-    <script src="app.js?v=2"></script>
+
+    <script src="app.js?v=10"></script>
 </body>
 </html>
