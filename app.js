@@ -434,7 +434,7 @@ function startCounter() {
     document.getElementById('btnStartCounter').disabled = true;
     openFocusOverlay(`UNDIAN NOMOR URUT • GILIRAN #${activeCand.drawTurnOrder}`, activeCand.name, 15.0, 'H');
 
-    const totalDuration = 15000;
+    const totalDuration = 16000;
     const startTime = Date.now();
     let musicTick = 0;
 
