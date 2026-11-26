@@ -1,8 +1,13 @@
-/* RESET & DASAR */
+/* RESET & PAS 1 LAYAR PC (NO-SCROLL) */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+}
+
+html, body {
+    height: 100vh;
+    overflow: hidden; /* Hilangkan scroll atas-bawah */
 }
 
 body {
@@ -15,7 +20,6 @@ body {
         linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
         linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
     background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
-    min-height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -26,125 +30,90 @@ body {
     letter-spacing: 0.05em;
 }
 
-/* HEADER & NAVIGASI */
+/* HEADER KOMPAK */
 header {
-    background: rgba(2, 6, 23, 0.9);
+    background: rgba(2, 6, 23, 0.92);
     border-bottom: 1px solid rgba(6, 182, 212, 0.3);
-    backdrop-filter: blur(10px);
-    position: sticky;
-    top: 0;
-    z-index: 50;
+    flex-shrink: 0;
 }
 
 header > div:first-child {
-    max-width: 1200px;
+    max-width: 1280px;
     margin: 0 auto;
-    padding: 1rem 1.5rem;
+    padding: 0.6rem 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
 }
 
-header h1 {
-    font-size: 1.25rem;
-    color: #ffffff;
-}
+header h1 { font-size: 1.15rem; color: #ffffff; }
+header h1 span { color: #22d3ee; }
+header p { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; }
 
-header h1 span {
-    color: #22d3ee;
-}
-
-header p {
-    font-size: 0.75rem;
-    color: #94a3b8;
-    text-transform: uppercase;
-}
-
-/* LOGO K26 */
 header .w-10 {
-    width: 42px;
-    height: 42px;
-    border-radius: 10px;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
     background: linear-gradient(135deg, #06b6d4, #10b981);
     color: #020617;
     font-weight: 900;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
 }
 
-header .flex.items-center.gap-3 {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-header .flex.items-center.gap-4 {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-/* DROPDOWN METODE ACAK */
 select {
     background: #0f172a;
     color: #22d3ee;
     border: 1px solid #334155;
-    padding: 0.4rem 0.75rem;
-    border-radius: 8px;
+    padding: 0.35rem 0.65rem;
+    border-radius: 6px;
     font-weight: 600;
+    font-size: 0.75rem;
     cursor: pointer;
 }
 
-/* STEPPER INDIKATOR HALAMAN */
 header > div:last-child {
-    background: rgba(15, 23, 42, 0.8);
+    background: rgba(15, 23, 42, 0.85);
     border-top: 1px solid #1e293b;
 }
 
 header > div:last-child > div {
     max-width: 900px;
     margin: 0 auto;
-    padding: 0.65rem 1.5rem;
+    padding: 0.45rem 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
 }
 
-.h-px {
-    height: 1px;
-    background: #334155;
-    flex: 1;
-    margin: 0 1rem;
-}
-
-#step-ind-1, #step-ind-2, #step-ind-3 {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
+.h-px { height: 1px; background: #334155; flex: 1; margin: 0 1rem; }
 .text-cyan-400 { color: #22d3ee; }
 .text-emerald-400 { color: #34d399; }
 .text-amber-400 { color: #fbbf24; }
+.text-slate-400 { color: #94a3b8; }
 .text-slate-500 { color: #64748b; }
+.text-xs { font-size: 0.75rem; }
+.font-bold { font-weight: 700; }
 
-/* KONTEN UTAMA */
+/* MAIN AREA PAS DI TENGAH LAYAR */
 main {
-    max-width: 1150px;
+    max-width: 1240px;
     width: 100%;
     margin: 0 auto;
-    padding: 2rem 1.5rem;
+    padding: 0.75rem 1.5rem;
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
 }
 
 .page-section {
     display: none;
-    animation: fadeIn 0.35s ease-out forwards;
+    width: 100%;
+    animation: fadeIn 0.3s ease-out forwards;
 }
 
 .page-section.active {
@@ -152,153 +121,293 @@ main {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
+    from { opacity: 0; transform: translateY(6px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
 .text-center { text-align: center; }
-.mb-8 { margin-bottom: 2rem; }
-.mb-6 { margin-bottom: 1.5rem; }
-.mb-4 { margin-bottom: 1rem; }
-.mt-3 { margin-top: 0.75rem; }
-.mt-6 { margin-top: 1.5rem; }
-.mt-8 { margin-top: 2rem; }
+.mb-8 { margin-bottom: 1rem; }
+.mb-6 { margin-bottom: 0.85rem; }
+.mb-4 { margin-bottom: 0.75rem; }
+.mt-3 { margin-top: 0.4rem; }
+.mt-6 { margin-top: 0.85rem; }
+.mt-8 { margin-top: 1rem; }
 
 h2 {
-    font-size: 1.85rem;
+    font-size: 1.5rem;
     color: #ffffff;
     text-shadow: 0 0 15px rgba(34, 211, 238, 0.5);
 }
 
-/* PANEL KACA FUTURISTIK */
 .glass-panel {
-    background: rgba(15, 23, 42, 0.85);
+    background: rgba(15, 23, 42, 0.88);
     border: 1px solid rgba(56, 189, 248, 0.3);
-    border-radius: 16px;
-    padding: 1.5rem;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(6, 182, 212, 0.08);
+    border-radius: 14px;
+    padding: 1.15rem 1.35rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
 }
 
-/* GRID TATA LETAK */
-.grid {
-    display: grid;
-    gap: 1.5rem;
-}
+.grid { display: grid; gap: 1.25rem; }
 
 @media (min-width: 1024px) {
-    .lg\:grid-cols-12 {
-        grid-template-columns: repeat(12, 1fr);
-    }
+    .lg\:grid-cols-12 { grid-template-columns: repeat(12, 1fr); }
     .lg\:col-span-5 { grid-column: span 5; }
     .lg\:col-span-6 { grid-column: span 6; }
     .lg\:col-span-7 { grid-column: span 7; }
-    .lg\:col-span-2 { grid-column: span 2; }
 }
-
-/* INPUT & TOMBOL */
+/* INPUT, TOMBOL & DAFTAR CALON KOMPAK */
 input[type="text"] {
     width: 100%;
     background: #020617;
     border: 1px solid #334155;
     color: #ffffff;
-    padding: 0.85rem 1rem;
-    border-radius: 10px;
-    font-size: 1rem;
-    margin-top: 0.4rem;
-    margin-bottom: 1rem;
+    padding: 0.7rem 0.9rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    margin-top: 0.35rem;
+    margin-bottom: 0.75rem;
 }
 
 input[type="text"]:focus {
     outline: none;
     border-color: #22d3ee;
-    box-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
 }
 
 button {
     cursor: pointer;
     border: none;
-    border-radius: 10px;
-    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    padding: 0.65rem 1.1rem;
     font-weight: 700;
+    font-size: 0.85rem;
     transition: all 0.2s ease;
     background: #1e293b;
     color: #e2e8f0;
 }
 
-button:hover:not(:disabled) {
-    transform: translateY(-2px);
-    filter: brightness(1.15);
-}
-
-button:disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
-}
+button:hover:not(:disabled) { filter: brightness(1.15); }
+button:disabled { opacity: 0.45; cursor: not-allowed; }
 
 button[type="submit"], #btnToPage2:not(:disabled) {
-    width: 100%;
     background: linear-gradient(90deg, #06b6d4, #10b981);
     color: #020617;
-    box-shadow: 0 0 15px rgba(6, 182, 212, 0.35);
 }
-
-#btnToPage2:not(:disabled) {
-    width: auto;
-}
-
-#btnShuffleStage1 {
-    background: linear-gradient(135deg, #f59e0b, #ea580c);
-    color: #020617;
-    width: 130px;
-    height: 130px;
-    border-radius: 50%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto;
-    box-shadow: 0 0 25px rgba(245, 158, 11, 0.4);
-}
-
-#btnShuffleStage1 svg, header svg {
-    width: 24px;
-    height: 24px;
-}
+button[type="submit"] { width: 100%; }
 
 #btnToPage3:not(:disabled), #btnStartCounter:not(:disabled) {
     background: linear-gradient(90deg, #10b981, #0d9488);
     color: #020617;
-    box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
 }
 
-#btnStopCounter:not(:disabled) {
-    background: linear-gradient(90deg, #e11d48, #f59e0b);
-    color: #ffffff;
-    box-shadow: 0 0 20px rgba(225, 29, 72, 0.5);
+.btn-amber:not(:disabled) {
+    background: linear-gradient(90deg, #f59e0b, #ea580c) !important;
+    color: #020617 !important;
 }
 
-/* ITEM DAFTAR CALON */
-#attendanceList > div, #stage1InputList > div, #stage1ResultList > div, #finalResultsList > div {
+header svg { width: 18px; height: 18px; }
+
+/* DAFTAR CALON DENGAN SCROLL INTERNAL JIKA CALON BANYAK */
+#attendanceList, #stage1ResultList, #finalResultsList {
+    max-height: 44vh;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+#attendanceList > div, #stage1ResultList > div, #finalResultsList > div {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(2, 6, 23, 0.75);
+    background: rgba(2, 6, 23, 0.8);
     border: 1px solid #1e293b;
-    padding: 0.85rem 1rem;
-    border-radius: 10px;
-    margin-bottom: 0.65rem;
+    padding: 0.55rem 0.85rem;
+    border-radius: 8px;
+    margin-bottom: 0.45rem;
 }
 
-/* KONTER ANGKA BESAR (HALAMAN 3) */
-#counterDisplay {
+/* KARTU CALON AKTIF */
+.active-drawer-card {
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.12), rgba(16, 185, 129, 0.12));
+    border: 1px solid rgba(34, 211, 238, 0.4);
+    border-radius: 10px;
+    padding: 0.55rem 0.85rem;
+}
+.active-drawer-card.amber-card {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.14), rgba(234, 88, 12, 0.14));
+    border-color: rgba(251, 191, 36, 0.45);
+}
+.active-drawer-card h3 { font-size: 1.25rem; color: #ffffff; margin-top: 0.15rem; }
+
+/* MEDIA UNDIAN 1 (HALAMAN 2): CAPSULE SLOT */
+.slot-machine-box {
+    position: relative;
     width: 190px;
-    height: 190px;
+    height: 125px;
+    margin: 0.85rem auto;
+    background: linear-gradient(180deg, #020617 0%, #0f172a 50%, #020617 100%);
+    border: 3px solid #f59e0b;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 25px rgba(245, 158, 11, 0.25);
+}
+
+#stage1SlotDisplay {
+    font-size: 4.5rem;
+    font-weight: 900;
+    color: #fbbf24;
+    text-shadow: 0 0 20px rgba(251, 191, 36, 0.8);
+}
+
+/* =========================================================
+   MODEL KONTER BARU HALAMAN 3: CYBER SPLIT DIGITAL MODULE
+   ========================================================= */
+.cyber-counter-module {
+    position: relative;
+    width: 210px;
+    height: 140px;
+    margin: 0.85rem auto;
+    background: linear-gradient(180deg, #061816 0%, #020617 49%, #092420 51%, #020617 100%);
+    border: 3px solid #10b981;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 30px rgba(16, 185, 129, 0.3), inset 0 0 20px rgba(16, 185, 129, 0.2);
+}
+
+/* Garis Engsel Tengah Digital Flip */
+.cyber-counter-module::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 2px;
+    background: rgba(16, 185, 129, 0.45);
+    box-shadow: 0 0 8px #10b981;
+}
+
+/* Aksen Sudut Futuristik */
+.cyber-counter-module::before {
+    content: "NO. URUT";
+    position: absolute;
+    top: 6px;
+    left: 10px;
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    color: #34d399;
+    font-family: 'Orbitron', monospace;
+}
+
+#counterDisplay {
+    font-size: 5.2rem;
+    font-weight: 900;
+    color: #34d399;
+    text-shadow: 0 0 25px rgba(52, 211, 153, 0.9);
+    z-index: 2;
+}
+
+/* TIMER & TOMBOL ENTER */
+.timer-wrapper { max-width: 340px; margin: 0 auto; }
+.progress-track { width: 100%; height: 8px; background: #020617; border: 1px solid #334155; border-radius: 999px; overflow: hidden; }
+.progress-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #10b981, #22d3ee, #f59e0b); }
+.progress-fill.amber-fill { background: linear-gradient(90deg, #f59e0b, #fbbf24, #34d399); }
+
+.btn-enter-action {
+    width: 100%;
+    padding: 0.8rem 1.2rem;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+}
+
+.key-badge {
+    background: rgba(2, 6, 23, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    color: #ffffff;
+    font-size: 0.68rem;
+    padding: 0.15rem 0.45rem;
+    border-radius: 5px;
+    font-family: monospace;
+}
+
+/* =========================================================
+   MODE FULLSCREEN OVERLAY DENGAN ANGKA SUPER BESAR
+   ========================================================= */
+.focus-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: radial-gradient(circle at center, #091326 0%, #02040a 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+}
+
+.focus-content { max-width: 800px; width: 100%; }
+.focus-content h2 { font-size: 2.6rem; color: #ffffff; text-shadow: 0 0 25px rgba(34, 211, 238, 0.8); }
+
+.focus-counter-ring {
+    position: relative;
+    width: 410px;
+    height: 410px;
+    margin: 1rem auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.scanner-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 5px dashed rgba(34, 211, 238, 0.45);
+}
+
+.scanner-ring.spinning {
+    border-color: #22d3ee;
+    border-top-color: #10b981;
+    border-bottom-color: #f59e0b;
+    box-shadow: 0 0 55px rgba(34, 211, 238, 0.6);
+    animation: spinRadar 1.1s linear infinite;
+}
+
+@keyframes spinRadar { 100% { transform: rotate(360deg); } }
+
+#focusDigitDisplay {
+    width: 345px;
+    height: 345px;
     border-radius: 50%;
     background: radial-gradient(circle, #0f172a 0%, #020617 100%);
-    border: 3px solid #10b981;
-    font-size: 6.5rem;
-    margin: 0;
+    border: 5px solid #22d3ee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16rem; /* ANGKA RAKSASA SUPER JELAS */
+    line-height: 1;
+    font-weight: 900;
+    color: #22d3ee;
+    text-shadow: 0 0 50px rgba(34, 211, 238, 0.95);
     z-index: 2;
+}
+
+#focusDigitDisplay.amber-mode {
+    border-color: #f59e0b;
+    color: #fbbf24;
+    text-shadow: 0 0 50px rgba(251, 191, 36, 0.95);
+}
+
+#focusDigitDisplay.locked-final {
+    border-color: #10b981;
+    color: #34d399;
+    text-shadow: 0 0 65px rgba(52, 211, 153, 1);
+    box-shadow: 0 0 95px rgba(16, 185, 129, 0.75);
+    transform: scale(1.06);
+    transition: all 0.2s ease;
 }
 
 .flex { display: flex; }
@@ -312,131 +421,14 @@ button[type="submit"], #btnToPage2:not(:disabled) {
 
 footer {
     border-top: 1px solid #1e293b;
-    padding: 1rem;
+    padding: 0.55rem;
     text-align: center;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: #64748b;
-}
-/* =========================================
-   MEDIA UNDIAN 1: MESIN SLOT / REEL DIGITAL
-   ========================================= */
-.active-drawer-card.amber-card {
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.14), rgba(234, 88, 12, 0.14));
-    border-color: rgba(251, 191, 36, 0.45);
+    flex-shrink: 0;
 }
 
-.slot-machine-box {
-    position: relative;
-    width: 240px;
-    height: 150px;
-    margin: 1.5rem auto;
-    background: linear-gradient(180deg, #020617 0%, #0f172a 50%, #020617 100%);
-    border: 3px solid #f59e0b;
-    border-radius: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 0 35px rgba(245, 158, 11, 0.25), inset 0 0 25px rgba(0, 0, 0, 0.9);
-    overflow: hidden;
-}
-
-.slot-laser-line {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 50%;
-    height: 2px;
-    background: rgba(245, 158, 11, 0.25);
-    pointer-events: none;
-}
-
-#stage1SlotDisplay {
-    font-size: 5rem;
-    font-weight: 900;
-    color: #fbbf24;
-    text-shadow: 0 0 25px rgba(251, 191, 36, 0.8);
-    z-index: 2;
-}
-
-#stage1SlotDisplay.locked-slot {
-    color: #34d399;
-    text-shadow: 0 0 30px rgba(52, 211, 153, 0.95);
-    transform: scale(1.08);
-}
-
-.progress-fill.amber-fill {
-    background: linear-gradient(90deg, #f59e0b, #fbbf24, #34d399);
-}
-
-.btn-amber:not(:disabled) {
-    background: linear-gradient(90deg, #f59e0b, #ea580c) !important;
-    color: #020617 !important;
-    box-shadow: 0 0 20px rgba(245, 158, 11, 0.4) !important;
-}
-/* =========================================
-   MODE LAYAR PENUH KONTER RAKSASA (OVERLAY)
-   ========================================= */
-.focus-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    background: radial-gradient(circle at center, #091326 0%, #02040a 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    animation: fadeIn 0.25s ease-out forwards;
-}
-
-.focus-content {
-    max-width: 700px;
-    width: 100%;
-}
-
-.focus-content h2 {
-    font-size: 2.5rem;
-    color: #ffffff;
-    text-shadow: 0 0 20px rgba(34, 211, 238, 0.7);
-}
-
-.focus-counter-ring {
-    position: relative;
-    width: 340px;
-    height: 340px;
-    margin: 1.5rem auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-#focusDigitDisplay {
-    width: 280px;
-    height: 280px;
-    border-radius: 50%;
-    background: radial-gradient(circle, #0f172a 0%, #020617 100%);
-    border: 4px solid #22d3ee;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11rem;
-    font-weight: 900;
-    color: #22d3ee;
-    text-shadow: 0 0 40px rgba(34, 211, 238, 0.9);
-    box-shadow: 0 0 60px rgba(34, 211, 238, 0.25);
-    z-index: 2;
-    transition: all 0.2s ease;
-}
-
-#focusDigitDisplay.amber-mode {
-    border-color: #f59e0b;
-    color: #fbbf24;
-    text-shadow: 0 0 40px rgba(251, 191, 36, 0.9);
-}
-
-#focusDigitDisplay.locked-final {
-    border-color: #10b981;
-    color: #34d399;
-    text-shadow: 0 0 55px rgba(52, 211, 153, 1);
-    box-shadow: 0 0 85px rgba(16, 185, 129, 0.65);
-    transform: scale(1.08);
+@media print {
+    html, body { height: auto; overflow: visible; background: #fff !important; color: #000 !important; }
+    header, footer, .no-print, #focusOverlay { display: none !important; }
 }
