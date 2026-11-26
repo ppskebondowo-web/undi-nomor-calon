@@ -448,4 +448,51 @@ header svg { width: 18px; height: 18px; }
     transform: scale(1.08);
     transition: all 0.2s ease;
 }
+/* PASTIKAN BARIS INI ADA DI PALING BAWAH style.css */
+.hidden {
+    display: none !important;
+}
+
+.focus-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 9999 !important;
+    background: radial-gradient(circle at center, #09152b 0%, #02040a 100%) !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem !important;
+}
+
+.focus-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    max-height: 95vh;
+}
+
+.focus-content h2 {
+    font-size: 2.2rem !important;
+    margin: 0.4rem 0 0.8rem 0 !important;
+}
+
+.model-d-stage {
+    width: 280px !important;
+    height: 280px !important;
+    margin: 0.5rem auto !important;
+}
+
+.diamond-outer { width: 200px !important; height: 200px !important; }
+.diamond-inner { width: 184px !important; height: 184px !important; }
+.num-d { font-size: 10.5rem !important; }
+
+.model-h-stage {
+    width: 340px !important;
+    height: 320px !important;
+    margin: 0.25rem auto !important;
+}
+
+.num-h { font-size: 15.5rem !important; }
 
