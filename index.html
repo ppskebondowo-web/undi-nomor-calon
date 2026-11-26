@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengundian Nomor Urut Calon Kepala Desa Kebondowo 2026</title>
+    <script src="https://tailwindcss.com"></script>
+    <link href="https://googleapis.com" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-grid flex flex-col justify-between">
+
+    <!-- HEADER -->
+    <header class="border-b border-cyan-500/20 bg-slate-950/85 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-emerald-500 flex items-center justify-center font-futuristic font-black text-slate-950 text-xl shadow-lg shadow-cyan-500/30">
+                    K26
+                </div>
+                <div>
+                    <h1 class="font-futuristic font-bold text-lg md:text-xl tracking-wider text-white">
+                        PILKADES <span class="text-cyan-400">KEBONDOWO</span> 2026
+                    </h1>
+                    <p class="text-xs text-slate-400 tracking-widest uppercase">Sistem Pengundian Nomor Urut Digital</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2 bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs">
+                    <span class="text-slate-400">Metode Acak:</span>
+                    <select id="rngVersion" class="bg-transparent text-cyan-400 font-semibold focus:outline-none cursor-pointer">
+                        <option value="crypto" class="bg-slate-900">Versi 1: Crypto CSPRNG (Aman)</option>
+                        <option value="math" class="bg-slate-900">Versi 2: Standard PRNG</option>
+                    </select>
+                </div>
+
+                <button onclick="toggleFullScreen()" title="Layar Penuh" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-slate-700 transition">
+                    <svg xmlns="http://w3.org" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Stepper -->
+        <div class="bg-slate-900/60 border-t border-slate-800">
+            <div class="max-w-4xl mx-auto px-6 py-2.5 flex justify-between items-center text-xs md:text-sm font-futuristic">
+                <div id="step-ind-1" class="flex items-center gap-2 text-cyan-400 font-bold">
+                    <span class="w-6 h-6 rounded-full bg-cyan-500/20 border border-cyan-400 flex items-center justify-center">1</span>
+                    <span>KEHADIRAN CALON</span>
+                </div>
+                <div class="h-px bg-slate-700 flex-1 mx-4"></div>
+                <div id="step-ind-2" class="flex items-center gap-2 text-slate-500">
+                    <span class="w-6 h-6 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center">2</span>
+                    <span>UNDIAN 1: URUTAN AMBIL</span>
+                </div>
+                <div class="h-px bg-slate-700 flex-1 mx-4"></div>
+                <div id="step-ind-3" class="flex items-center gap-2 text-slate-500">
+                    <span class="w-6 h-6 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center">3</span>
+                    <span>UNDIAN 2: NOMOR URUT</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- KONTEN UTAMA -->
+    <main class="max-w-6xl w-full mx-auto px-6 py-8 flex-1 flex flex-col justify-center">
+
+        <!-- HALAMAN 1 -->
+        <section id="page-1" class="page-section active">
+            <div class="text-center mb-8">
+                <span class="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-futuristic tracking-widest uppercase">
+                    Panitia Pemilihan Kepala Desa Kebondowo
+                </span>
+                <h2 class="text-3xl md:text-4xl font-futuristic font-black text-white mt-3 tracking-wide neon-text-cyan">
+                    REGISTRASI URUTAN KEHADIRAN
+                </h2>
+                <p class="text-slate-400 mt-2 max-w-2xl mx-auto text-sm md:text-base">
+                    Masukkan nama Calon Kepala Desa sesuai urutan waktu kehadiran di lokasi acara.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <div class="lg:col-span-5 glass-panel rounded-2xl p-6">
+                    <h3 class="font-futuristic text-lg font-bold text-cyan-400 mb-4">+ Tambah Calon Hadir</h3>
+                    <form onsubmit="addCandidate(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1.5">Nama Lengkap Calon</label>
+                            <input type="text" id="candidateNameInput" required placeholder="Contoh: Drs. H. Ahmad Fauzi" 
+                                class="w-full bg-slate-900/90 border border-slate-700 focus:border-cyan-400 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none transition">
+                        </div>
+                        <button type="submit" 
+                            class="w-full py-3 px-4 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-slate-950 font-futuristic font-bold rounded-xl shadow-lg shadow-cyan-500/25 transition transform active:scale-95">
+                            CATAT KEHADIRAN
+                        </button>
+                    </form>
+
+                    <div class="mt-6 pt-5 border-t border-slate-800 text-xs text-slate-400 space-y-2">
+                        <p class="font-semibold text-slate-300">2 Versi Sistem Pengacakan:</p>
+                        <p>• <strong class="text-cyan-400">Versi 1 (Crypto CSPRNG):</strong> API kriptografi browser (<code>crypto.getRandomValues</code>).</p>
+                        <p>• <strong class="text-emerald-400">Versi 2 (Standard PRNG):</strong> Algoritma pseudo-random standar (<code>Math.random</code>).</p>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-7 glass-panel rounded-2xl p-6 flex flex-col justify-between min-h-[360px]">
+                    <div>
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-futuristic text-lg font-bold text-white">
+                                Daftar Hadir Calon (<span id="candidateCount" class="text-cyan-400">0</span>)
+                            </h3>
+                            <button onclick="resetAllData()" class="text-xs text-rose-400 hover:text-rose-300 underline">Reset Data</button>
+                        </div>
+
+                        <div id="attendanceList" class="space-y-2.5 max-h-[300px] overflow-y-auto pr-1">
+                            <div class="text-center py-12 text-slate-500 border border-dashed border-slate-800 rounded-xl">
+                                Belum ada calon yang dientri. Minimal 2 calon untuk memulai undian.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-slate-800 flex justify-end">
+                        <button id="btnToPage2" onclick="goToPage(2)" disabled
+                            class="px-6 py-3 rounded-xl font-futuristic font-bold text-sm tracking-wider bg-slate-800 text-slate-500 cursor-not-allowed transition flex items-center gap-2">
+                            <span>LANJUT KE UNDIAN TAHAP 1</span>
+                            <span>→</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- HALAMAN 2 -->
+        <section id="page-2" class="page-section">
+            <div class="text-center mb-8">
+                <span class="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-futuristic tracking-widest uppercase">
+                    Tahap Pertama
+                </span>
+                <h2 class="text-3xl md:text-4xl font-futuristic font-black text-white mt-3 tracking-wide">
+                    UNDIAN URUTAN PENGAMBILAN NOMOR
+                </h2>
+                <p class="text-slate-400 mt-2 max-w-2xl mx-auto text-sm">
+                    Mengacak urutan giliran calon dalam melakukan penarikan nomor urut resmi.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                <div class="lg:col-span-5 glass-panel rounded-2xl p-6">
+                    <h3 class="font-futuristic text-sm uppercase tracking-wider text-slate-400 mb-4">Urutan Kehadiran Awal</h3>
+                    <div id="stage1InputList" class="space-y-3"></div>
+                </div>
+
+                <div class="lg:col-span-2 flex flex-col items-center justify-center gap-4">
+                    <button id="btnShuffleStage1" onclick="runStage1Draw()"
+                        class="w-full lg:w-32 lg:h-32 rounded-2xl lg:rounded-full bg-gradient-to-br from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-futuristic font-black text-sm md:text-base shadow-lg shadow-amber-500/30 transition transform hover:scale-105 active:scale-95 flex flex-col items-center justify-center p-4 text-center">
