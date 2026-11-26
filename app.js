@@ -215,8 +215,7 @@ function lockFocusOverlay(finalDigit, stageType) {
     document.getElementById('focusStatusText').textContent = 'TERKUNCI!';
     document.getElementById('focusCountdownText').textContent = '0.0';
     document.getElementById('focusCountdownBar').style.width = '0%';
-    document.getElementById('autoSaveNotice').classList.remove('hidden');
-
+   
     if (stageType === 'D') {
         document.getElementById('diamondOuter').classList.remove('spinning');
         const digD = document.getElementById('digitModelD');
@@ -236,41 +235,7 @@ function closeFocusOverlay() {
     document.getElementById('focusOverlay').classList.add('hidden');
 }
 
-function autoDownloadResultImage(tahapJudul, namaCalon, nomorHasil, infoTambahan) {
-    try {
-        const canvas = document.createElement('canvas');
-        canvas.width = 1280; canvas.height = 720;
-        const ctx = canvas.getContext('2d');
-        const grad = ctx.createRadialGradient(640, 360, 50, 640, 360, 750);
-        grad.addColorStop(0, '#0f2942'); grad.addColorStop(1, '#050814');
-        ctx.fillStyle = grad; ctx.fillRect(0, 0, 1280, 720);
-        ctx.strokeStyle = '#22d3ee'; ctx.lineWidth = 6; ctx.strokeRect(35, 35, 1210, 650);
 
-        ctx.fillStyle = '#22d3ee'; ctx.font = 'bold 26px sans-serif'; ctx.textAlign = 'center';
-        ctx.fillText('PANITIA PEMILIHAN KEPALA DESA KEBONDOWO TAHUN 2026', 640, 105);
-        ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 22px sans-serif';
-        ctx.fillText(tahapJudul.toUpperCase(), 640, 150);
-        ctx.fillStyle = '#ffffff'; ctx.font = 'bold 48px sans-serif';
-        ctx.fillText(namaCalon, 640, 235);
-
-        ctx.beginPath(); ctx.arc(640, 415, 130, 0, Math.PI * 2);
-        ctx.fillStyle = '#020617'; ctx.fill(); ctx.lineWidth = 8; ctx.strokeStyle = '#10b981'; ctx.stroke();
-
-        ctx.fillStyle = '#34d399'; ctx.font = 'bold 175px sans-serif'; ctx.textBaseline = 'middle';
-        ctx.fillText(`${nomorHasil}`, 640, 422);
-
-        ctx.textBaseline = 'alphabetic'; ctx.fillStyle = '#fbbf24'; ctx.font = 'bold 24px sans-serif';
-        ctx.fillText(infoTambahan, 640, 605);
-        ctx.fillStyle = '#64748b'; ctx.font = '18px sans-serif';
-        ctx.fillText(`Terekam Otomatis • ${new Date().toLocaleString('id-ID')}`, 640, 650);
-
-        const cleanName = namaCalon.replace(/[^a-zA-Z0-9]/g, '_');
-        const link = document.createElement('a');
-        link.download = `${tahapJudul.replace(/\s+/g, '')}_No-${nomorHasil}_${cleanName}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-    } catch (e) {}
-}
 
 // =========================================
 // HALAMAN 2: UNDIAN 1 (MODEL D)
@@ -370,8 +335,7 @@ function startStage1Spin() {
         lockFocusOverlay(chosenTurn, 'D');
         document.getElementById('stage1SlotDisplay').textContent = `${chosenTurn}`;
         playVictoryFanfare();
-        autoDownloadResultImage('Undian 1 Urutan Ambil', activeCand.name, chosenTurn, `Giliran Pengambilan Nomor Ke-${chosenTurn}`);
-
+        
         candidates[stage1DrawerIdx].drawTurnOrder = chosenTurn;
         candidates[stage1DrawerIdx].officialNumber = null;
         stage1AvailableTurns.splice(finalIdx, 1);
@@ -485,8 +449,7 @@ function startCounter() {
         lockFocusOverlay(chosenNumber, 'H');
         document.getElementById('counterDisplay').textContent = `${chosenNumber}`;
         playVictoryFanfare();
-        autoDownloadResultImage('Penetapan Nomor Urut', activeCand.name, chosenNumber, `NOMOR URUT RESMI: ${chosenNumber}`);
-
+        
         activeCand.officialNumber = chosenNumber;
         availableNumbers.splice(finalIdx, 1);
 
