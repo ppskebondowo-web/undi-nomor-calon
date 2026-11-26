@@ -4,178 +4,180 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pengundian Nomor Urut Calon Kepala Desa Kebondowo 2026</title>
-    <link href="https://googleapis.com" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-grid flex flex-col justify-between">
 
     <!-- HEADER -->
-    <header class="border-b border-cyan-500/20 bg-slate-950/85 backdrop-blur-md sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+    <header>
+        <div>
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-emerald-500 flex items-center justify-center font-futuristic font-black text-slate-950 text-xl shadow-lg shadow-cyan-500/30">
-                    K26
-                </div>
+                <div class="w-10 font-futuristic">K26</div>
                 <div>
-                    <h1 class="font-futuristic font-bold text-lg md:text-xl tracking-wider text-white">
-                        PILKADES <span class="text-cyan-400">KEBONDOWO</span> 2026
-                    </h1>
-                    <p class="text-xs text-slate-400 tracking-widest uppercase">Sistem Pengundian Nomor Urut Digital</p>
+                    <h1 class="font-futuristic">PILKADES <span>KEBONDOWO</span> 2026</h1>
+                    <p>Sistem Pengundian Nomor Urut Digital</p>
                 </div>
             </div>
 
             <div class="flex items-center gap-4">
-                <div class="flex items-center gap-2 bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs">
-                    <span class="text-slate-400">Metode Acak:</span>
-                    <select id="rngVersion" class="bg-transparent text-cyan-400 font-semibold focus:outline-none cursor-pointer">
-                        <option value="crypto" class="bg-slate-900">Versi 1: Crypto CSPRNG (Aman)</option>
-                        <option value="math" class="bg-slate-900">Versi 2: Standard PRNG</option>
+                <div class="flex items-center gap-2">
+                    <span class="text-slate-400 text-xs">Metode Acak:</span>
+                    <select id="rngVersion">
+                        <option value="crypto">Versi 1: Crypto CSPRNG (Aman)</option>
+                        <option value="math">Versi 2: Standard PRNG</option>
                     </select>
                 </div>
 
-                <button onclick="toggleFullScreen()" title="Layar Penuh" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-slate-700 transition">
-                    <svg xmlns="http://w3.org" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <button type="button" onclick="toggleFullScreen()" title="Layar Penuh">
+                    <svg xmlns="http://w3.org" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
                     </svg>
                 </button>
             </div>
         </div>
 
-        <!-- Stepper -->
-        <div class="bg-slate-900/60 border-t border-slate-800">
-            <div class="max-w-4xl mx-auto px-6 py-2.5 flex justify-between items-center text-xs md:text-sm font-futuristic">
-                <div id="step-ind-1" class="flex items-center gap-2 text-cyan-400 font-bold">
-                    <span class="w-6 h-6 rounded-full bg-cyan-500/20 border border-cyan-400 flex items-center justify-center">1</span>
-                    <span>KEHADIRAN CALON</span>
+        <!-- Stepper Navigasi -->
+        <div>
+            <div class="font-futuristic">
+                <div id="step-ind-1" class="text-cyan-400 font-bold">
+                    <span>1. KEHADIRAN CALON</span>
                 </div>
-                <div class="h-px bg-slate-700 flex-1 mx-4"></div>
-                <div id="step-ind-2" class="flex items-center gap-2 text-slate-500">
-                    <span class="w-6 h-6 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center">2</span>
-                    <span>UNDIAN 1: URUTAN AMBIL</span>
+                <div class="h-px"></div>
+                <div id="step-ind-2" class="text-slate-500">
+                    <span>2. UNDIAN 1: URUTAN AMBIL</span>
                 </div>
-                <div class="h-px bg-slate-700 flex-1 mx-4"></div>
-                <div id="step-ind-3" class="flex items-center gap-2 text-slate-500">
-                    <span class="w-6 h-6 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center">3</span>
-                    <span>UNDIAN 2: NOMOR URUT</span>
+                <div class="h-px"></div>
+                <div id="step-ind-3" class="text-slate-500">
+                    <span>3. UNDIAN 2: NOMOR URUT</span>
                 </div>
             </div>
         </div>
     </header>
 
     <!-- KONTEN UTAMA -->
-    <main class="max-w-6xl w-full mx-auto px-6 py-8 flex-1 flex flex-col justify-center">
+    <main>
 
-        <!-- HALAMAN 1 -->
+        <!-- HALAMAN 1: BERANDA & ENTRI KEHADIRAN -->
         <section id="page-1" class="page-section active">
             <div class="text-center mb-8">
-                <span class="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-futuristic tracking-widest uppercase">
+                <span class="text-cyan-400 text-xs font-futuristic">
                     Panitia Pemilihan Kepala Desa Kebondowo
                 </span>
-                <h2 class="text-3xl md:text-4xl font-futuristic font-black text-white mt-3 tracking-wide neon-text-cyan">
+                <h2 class="font-futuristic mt-3">
                     REGISTRASI URUTAN KEHADIRAN
                 </h2>
-                <p class="text-slate-400 mt-2 max-w-2xl mx-auto text-sm md:text-base">
+                <p class="text-slate-500 mt-3">
                     Masukkan nama Calon Kepala Desa sesuai urutan waktu kehadiran di lokasi acara.
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                <div class="lg:col-span-5 glass-panel rounded-2xl p-6">
-                    <h3 class="font-futuristic text-lg font-bold text-cyan-400 mb-4">+ Tambah Calon Hadir</h3>
-                    <form onsubmit="addCandidate(event)" class="space-y-4">
+            <div class="grid lg:grid-cols-12">
+                <div class="lg:col-span-5 glass-panel">
+                    <h3 class="font-futuristic text-cyan-400 mb-4">+ Tambah Calon Hadir</h3>
+                    <form onsubmit="addCandidate(event)">
                         <div>
-                            <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1.5">Nama Lengkap Calon</label>
-                            <input type="text" id="candidateNameInput" required placeholder="Contoh: Drs. H. Ahmad Fauzi" 
-                                class="w-full bg-slate-900/90 border border-slate-700 focus:border-cyan-400 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none transition">
+                            <label class="text-xs text-slate-400">NAMA LENGKAP CALON</label>
+                            <input type="text" id="candidateNameInput" required placeholder="Contoh: Drs. H. Ahmad Fauzi">
                         </div>
-                        <button type="submit" 
-                            class="w-full py-3 px-4 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-slate-950 font-futuristic font-bold rounded-xl shadow-lg shadow-cyan-500/25 transition transform active:scale-95">
-                            CATAT KEHADIRAN
+                        <button type="submit">
+                            CATAT KEHADIRAN <span class="key-badge">ENTER ↵</span>
                         </button>
                     </form>
 
-                    <div class="mt-6 pt-5 border-t border-slate-800 text-xs text-slate-400 space-y-2">
-                        <p class="font-semibold text-slate-300">2 Versi Sistem Pengacakan:</p>
-                        <p>• <strong class="text-cyan-400">Versi 1 (Crypto CSPRNG):</strong> API kriptografi browser (<code>crypto.getRandomValues</code>).</p>
+                    <div class="mt-6 text-xs text-slate-400">
+                        <p class="mb-4"><strong>2 Versi Sistem Pengacakan:</strong></p>
+                        <p class="mb-4">• <strong class="text-cyan-400">Versi 1 (Crypto CSPRNG):</strong> API kriptografi browser (<code>crypto.getRandomValues</code>).</p>
                         <p>• <strong class="text-emerald-400">Versi 2 (Standard PRNG):</strong> Algoritma pseudo-random standar (<code>Math.random</code>).</p>
                     </div>
                 </div>
 
-                <div class="lg:col-span-7 glass-panel rounded-2xl p-6 flex flex-col justify-between min-h-[360px]">
-                    <div>
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="font-futuristic text-lg font-bold text-white">
-                                Daftar Hadir Calon (<span id="candidateCount" class="text-cyan-400">0</span>)
-                            </h3>
-                            <button onclick="resetAllData()" class="text-xs text-rose-400 hover:text-rose-300 underline">Reset Data</button>
-                        </div>
+                <div class="lg:col-span-7 glass-panel">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-futuristic">
+                            Daftar Hadir Calon (<span id="candidateCount" class="text-cyan-400">0</span>)
+                        </h3>
+                        <button type="button" onclick="resetAllData()" class="text-xs">Reset Data</button>
+                    </div>
 
-                        <div id="attendanceList" class="space-y-2.5 max-h-[300px] overflow-y-auto pr-1">
-                            <div class="text-center py-12 text-slate-500 border border-dashed border-slate-800 rounded-xl">
-                                Belum ada calon yang dientri. Minimal 2 calon untuk memulai undian.
-                            </div>
+                    <div id="attendanceList">
+                        <div style="text-align:center; padding:2rem; color:#64748b;">
+                            Belum ada calon yang dientri. Minimal 2 calon untuk memulai undian.
                         </div>
                     </div>
 
-                    <div class="mt-6 pt-4 border-t border-slate-800 flex justify-end">
-                        <button id="btnToPage2" onclick="goToPage(2)" disabled
-                            class="px-6 py-3 rounded-xl font-futuristic font-bold text-sm tracking-wider bg-slate-800 text-slate-500 cursor-not-allowed transition flex items-center gap-2">
-                            <span>LANJUT KE UNDIAN TAHAP 1</span>
-                            <span>→</span>
+                    <div class="mt-6 flex justify-end">
+                        <button type="button" id="btnToPage2" onclick="goToPage(2)" disabled>
+                            LANJUT KE UNDIAN TAHAP 1 <span class="key-badge">ENTER ↵</span>
                         </button>
                     </div>
                 </div>
             </div>
         </section>
-
-        <!-- HALAMAN 2 -->
+        <!-- HALAMAN 2: UNDIAN 1 (SISTEM REEL/SLOT PER CALON) -->
         <section id="page-2" class="page-section">
-            <div class="text-center mb-8">
-                <span class="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-futuristic tracking-widest uppercase">
-                    Tahap Pertama
+            <div class="text-center mb-6">
+                <span class="text-amber-400 text-xs font-futuristic">
+                    Tahap Pertama • Eksekusi Langsung Oleh Calon
                 </span>
-                <h2 class="text-3xl md:text-4xl font-futuristic font-black text-white mt-3 tracking-wide">
+                <h2 class="font-futuristic mt-3">
                     UNDIAN URUTAN PENGAMBILAN NOMOR
                 </h2>
-                <p class="text-slate-400 mt-2 max-w-2xl mx-auto text-sm">
-                    Mengacak urutan giliran calon dalam melakukan penarikan nomor urut resmi.
-                </p>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-                <div class="lg:col-span-5 glass-panel rounded-2xl p-6">
-                    <h3 class="font-futuristic text-sm uppercase tracking-wider text-slate-400 mb-4">Urutan Kehadiran Awal</h3>
-                    <div id="stage1InputList" class="space-y-3"></div>
-                </div>
+            <div class="grid lg:grid-cols-12">
+                <!-- Panel Kiri: Media Reel Slot Undian 1 -->
+                <div class="lg:col-span-6 glass-panel text-center no-print">
+                    <p class="text-slate-500 text-xs">CALON YANG MENGUNDI (BERDASARKAN KEHADIRAN):</p>
+                    <div class="active-drawer-card amber-card mt-3 mb-4">
+                        <span id="stage1ActiveOrder" class="text-amber-400 font-futuristic text-xs">HADIR #1</span>
+                        <h3 id="stage1ActiveName">-</h3>
+                    </div>
 
-                <div class="lg:col-span-2 flex flex-col items-center justify-center gap-4">
-                    <button id="btnShuffleStage1" onclick="runStage1Draw()"
-                        class="w-full lg:w-32 lg:h-32 rounded-2xl lg:rounded-full bg-gradient-to-br from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-futuristic font-black text-sm md:text-base shadow-lg shadow-amber-500/30 transition transform hover:scale-105 active:scale-95 flex flex-col items-center justify-center p-4 text-center">
-                    <button id="btnShuffleStage1" onclick="runStage1Draw()">
-                        <span>ACAK URUTAN</span>
-                    </button>
-                    <span id="stage1AlgoBadge" class="text-xs text-slate-400"></span>
-                </div>
+                    <div class="slot-machine-box">
+                        <div class="slot-laser-line"></div>
+                        <div id="stage1SlotDisplay" class="font-futuristic">00</div>
+                    </div>
 
-                <div class="lg:col-span-5 glass-panel">
-                    <h3 class="font-futuristic text-amber-400 mb-4">Hasil Urutan Giliran Undi</h3>
-                    <div id="stage1ResultList">
-                        <div class="text-center text-slate-500">
-                            Klik tombol "ACAK URUTAN" untuk menentukan giliran.
+                    <div class="timer-wrapper">
+                        <div class="flex justify-between text-xs font-futuristic mb-2">
+                            <span class="text-slate-400">STATUS: <strong id="stage1StatusText" class="text-amber-400">SIAP</strong></span>
+                            <span class="text-cyan-400">WAKTU: <strong id="stage1CountdownText">5.0</strong> DETIK</span>
+                        </div>
+                        <div class="progress-track">
+                            <div id="stage1CountdownBar" class="progress-fill amber-fill"></div>
                         </div>
                     </div>
+
+                    <p id="stage1RemainingText" class="text-slate-500 text-xs mt-3 mb-4">Sisa urutan tersedia: -</p>
+
+                    <button type="button" id="btnStartStage1" onclick="startStage1Spin()" class="btn-enter-action btn-amber">
+                        PUTAR URUTAN AMBIL <span class="key-badge">ENTER ↵</span>
+                    </button>
+                </div>
+
+                <!-- Panel Kanan: Daftar Hasil Urutan Giliran -->
+                <div class="lg:col-span-6 glass-panel">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-futuristic text-amber-400">HASIL URUTAN GILIRAN UNDI</h3>
+                        <span id="stage1AlgoBadge" class="text-slate-500 text-xs"></span>
+                    </div>
+
+                    <div id="stage1ResultList"></div>
                 </div>
             </div>
 
-            <div class="mt-8 flex justify-between items-center">
+            <div class="mt-8 flex justify-between items-center no-print">
                 <button type="button" onclick="goToPage(1)">← KEMBALI KE KEHADIRAN</button>
-                <button type="button" id="btnToPage3" onclick="goToPage(3)" disabled>
-                    LANJUT KE UNDIAN NOMOR URUT →
-                </button>
+                <div class="flex gap-3">
+                    <button type="button" onclick="resetStage1Only()">Ulangi Undian 1</button>
+                    <button type="button" id="btnToPage3" onclick="goToPage(3)" disabled>
+                        LANJUT KE UNDIAN 2 <span class="key-badge">ENTER ↵</span>
+                    </button>
+                </div>
             </div>
         </section>
 
-        <!-- HALAMAN 3: UNDIAN NOMOR URUT (KONTER) -->
+        <!-- HALAMAN 3: UNDIAN 2 (KONTER RADAR OTOMATIS 15 DETIK) -->
         <section id="page-3" class="page-section">
             <div class="text-center mb-6">
                 <span class="text-emerald-400 text-xs font-futuristic">
@@ -187,28 +189,34 @@
             </div>
 
             <div class="grid lg:grid-cols-12">
-                <!-- Panel Kiri: Konter Angka -->
+                <!-- Panel Kiri: Konter Modern 15 Detik -->
                 <div class="lg:col-span-6 glass-panel text-center no-print">
-                    <p class="text-slate-500">Giliran Mengundi Saat Ini:</p>
-                    <div class="mt-3 mb-4">
-                        <span id="activeDrawerOrder" class="text-cyan-400 font-futuristic">GILIRAN #1</span>
-                        <h3 id="activeDrawerName" class="mt-3">-</h3>
+                    <p class="text-slate-500 text-xs">GILIRAN MENGUNDI SAAT INI:</p>
+                    <div class="active-drawer-card mt-3 mb-4">
+                        <span id="activeDrawerOrder" class="text-cyan-400 font-futuristic text-xs">GILIRAN #1</span>
+                        <h3 id="activeDrawerName">-</h3>
                     </div>
 
-                    <div class="mb-6">
-                        <div class="text-emerald-400 font-futuristic text-xs">KONTER NOMOR URUT</div>
+                    <div class="counter-stage">
+                        <div id="scannerRing" class="scanner-ring"></div>
                         <div id="counterDisplay" class="font-futuristic">00</div>
-                        <p id="remainingNumbersText" class="text-slate-500 text-xs">Sisa nomor tersedia: -</p>
                     </div>
 
-                    <div class="flex gap-3">
-                        <button type="button" id="btnStartCounter" onclick="startCounter()" style="flex:1;">
-                            PUTAR KONTER
-                        </button>
-                        <button type="button" id="btnStopCounter" onclick="stopCounter()" disabled style="flex:1;">
-                            BERHENTI &amp; KUNCI
-                        </button>
+                    <div class="timer-wrapper">
+                        <div class="flex justify-between text-xs font-futuristic mb-2">
+                            <span class="text-slate-400">STATUS: <strong id="counterStatusText" class="text-cyan-400">SIAP</strong></span>
+                            <span class="text-amber-400">WAKTU: <strong id="countdownText">15.0</strong> DETIK</span>
+                        </div>
+                        <div class="progress-track">
+                            <div id="countdownBar" class="progress-fill"></div>
+                        </div>
                     </div>
+
+                    <p id="remainingNumbersText" class="text-slate-500 text-xs mt-3 mb-4">Sisa nomor tersedia: -</p>
+
+                    <button type="button" id="btnStartCounter" onclick="startCounter()" class="btn-enter-action">
+                        MULAI PUTAR KONTER <span class="key-badge">ENTER ↵</span>
+                    </button>
                 </div>
 
                 <!-- Panel Kanan: Daftar Hasil -->
