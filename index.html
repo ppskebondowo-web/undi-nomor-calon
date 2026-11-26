@@ -242,6 +242,28 @@
         </section>
 
     </main>
+    <!-- OVERLAY LAYAR PENUH SAAT KONTER BERPUTAR (HALAMAN 2 & 3) -->
+    <div id="focusOverlay" class="focus-overlay hidden">
+        <div class="focus-content text-center">
+            <span id="focusStageLabel" class="font-futuristic text-xs text-cyan-400">TAHAP PENGUNDIAN</span>
+            <h2 id="focusCandidateName" class="font-futuristic mt-3 mb-6">NAMA CALON</h2>
+
+            <div class="focus-counter-ring">
+                <div id="focusScannerRing" class="scanner-ring spinning"></div>
+                <div id="focusDigitDisplay" class="font-futuristic">0</div>
+            </div>
+
+            <div class="timer-wrapper mt-6">
+                <div class="flex justify-between text-xs font-futuristic mb-2">
+                    <span class="text-slate-400">STATUS: <strong id="focusStatusText" class="text-cyan-400">MENGACAK</strong></span>
+                    <span class="text-amber-400">WAKTU: <strong id="focusCountdownText">0.0</strong> DETIK</span>
+                </div>
+                <div class="progress-track">
+                    <div id="focusCountdownBar" class="progress-fill"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <footer>
         Panitia Pemilihan Kepala Desa Kebondowo Tahun 2026 • Sistem Pengundian Digital Transparan
