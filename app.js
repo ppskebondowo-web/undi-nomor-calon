@@ -6,21 +6,28 @@ let availableNumbers = [];
 let counterInterval = null;
 let isSpinning = false;
 let currentDisplayedNum = null;
+let audioCtx = null;
 
-// Efek Suara Web Audio API
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 function playBeep(freq = 600, duration = 0.05, type = 'sine') {
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = type;
-    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.start();
-    osc.stop(audioCtx.currentTime + duration);
+    try {
+        if (!audioCtx) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (AudioContext) audioCtx = new AudioContext();
+        }
+        if (audioCtx) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
+    } catch (err) {}
 }
 
 function playWinSound() {
@@ -29,22 +36,22 @@ function playWinSound() {
     setTimeout(() => playBeep(783.99, 0.3, 'triangle'), 240);
 }
 
-// 2 Versi Algoritma Pengacakan Angka
+// 2 Versi Pengacakan Angka
 function getRandomInt(max) {
-    const version = document.getElementById('rngVersion').value;
+    const rngEl = document.getElementById('rngVersion');
+    const version = rngEl ? rngEl.value : 'crypto';
+    
     if (version === 'crypto' && window.crypto && window.crypto.getRandomValues) {
-        // Versi 1: Crypto CSPRNG
         const array = new Uint32Array(1);
         const maxUint32 = 0xFFFFFFFF;
         const limit = maxUint32 - (maxUint32 % max);
         let randomValue;
         do {
             window.crypto.getRandomValues(array);
-            randomValue = array;
+            randomValue = array[0];
         } while (randomValue >= limit);
         return randomValue % max;
     } else {
-        // Versi 2: Standard Math.random() PRNG
         return Math.floor(Math.random() * max);
     }
 }
@@ -58,24 +65,16 @@ function shuffleArray(array) {
     return arr;
 }
 
-// Navigasi Halaman
 function goToPage(pageNum) {
     document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
     document.getElementById(`page-${pageNum}`).classList.add('active');
 
     for (let i = 1; i <= 3; i++) {
         const ind = document.getElementById(`step-ind-${i}`);
-        const circle = ind.querySelector('span');
-        if (i === pageNum) {
-            ind.className = 'flex items-center gap-2 text-cyan-400 font-bold';
-            circle.className = 'w-6 h-6 rounded-full bg-cyan-500/20 border border-cyan-400 flex items-center justify-center';
-        } else if (i < pageNum) {
-            ind.className = 'flex items-center gap-2 text-emerald-400';
-            circle.className = 'w-6 h-6 rounded-full bg-emerald-500/20 border border-emerald-400 flex items-center justify-center';
-        } else {
-            ind.className = 'flex items-center gap-2 text-slate-500';
-            circle.className = 'w-6 h-6 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center';
-        }
+        if (!ind) continue;
+        if (i === pageNum) ind.className = 'flex items-center gap-2 text-cyan-400 font-bold';
+        else if (i < pageNum) ind.className = 'flex items-center gap-2 text-emerald-400';
+        else ind.className = 'flex items-center gap-2 text-slate-500';
     }
 
     if (pageNum === 2) renderStage1Page();
@@ -92,13 +91,13 @@ function toggleFullScreen() {
 
 // Halaman 1: Kehadiran Calon
 function addCandidate(e) {
-    e.preventDefault();
+    if (e) e.preventDefault();
     const input = document.getElementById('candidateNameInput');
     const name = input.value.trim();
     if (!name) return;
 
     candidates.push({
-        id: Date.now() + Math.random(),
+        id: Date.now() + Math.floor(Math.random() * 1000),
         name: name,
         attendanceOrder: candidates.length + 1,
         drawTurnOrder: null,
@@ -106,6 +105,7 @@ function addCandidate(e) {
     });
 
     input.value = '';
+    input.focus();
     stage1Completed = false;
     playBeep(700, 0.06);
     renderAttendanceList();
@@ -126,29 +126,22 @@ function renderAttendanceList() {
     countEl.textContent = candidates.length;
 
     if (candidates.length === 0) {
-        listEl.innerHTML = `<div class="text-center py-12 text-slate-500 border border-dashed border-slate-800 rounded-xl">Belum ada calon yang dientri. Minimal 2 calon untuk memulai undian.</div>`;
+        listEl.innerHTML = `<div style="text-align:center; padding:2rem; color:#64748b;">Belum ada calon yang dientri. Minimal 2 calon untuk memulai undian.</div>`;
     } else {
         listEl.innerHTML = candidates.map(c => `
-            <div class="flex items-center justify-between bg-slate-900/90 border border-slate-800 px-4 py-3 rounded-xl">
-                <div class="flex items-center gap-3">
-                    <span class="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-futuristic font-bold flex items-center justify-center text-sm">${c.attendanceOrder}</span>
+            <div>
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <span style="background:rgba(6,182,212,0.2); color:#22d3ee; padding:4px 10px; border-radius:6px; font-weight:bold;">#${c.attendanceOrder}</span>
                     <div>
-                        <p class="font-semibold text-white">${escapeHtml(c.name)}</p>
-                        <p class="text-[11px] text-slate-400">Hadir ke-${c.attendanceOrder}</p>
+                        <p style="font-weight:bold; color:#fff; margin:0;">${escapeHtml(c.name)}</p>
+                        <p style="font-size:11px; color:#94a3b8; margin:0;">Hadir ke-${c.attendanceOrder}</p>
                     </div>
                 </div>
-                <button onclick="removeCandidate(${c.id})" class="text-slate-500 hover:text-rose-400 p-1 transition" title="Hapus">✕</button>
+                <button type="button" onclick="removeCandidate(${c.id})" style="background:transparent; color:#f43f5e; padding:4px 8px;">✕</button>
             </div>
         `).join('');
     }
-
-    if (candidates.length >= 2) {
-        btnNext.disabled = false;
-        btnNext.className = 'px-6 py-3 rounded-xl font-futuristic font-bold text-sm tracking-wider bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-slate-950 shadow-lg shadow-cyan-500/20 cursor-pointer transition flex items-center gap-2';
-    } else {
-        btnNext.disabled = true;
-        btnNext.className = 'px-6 py-3 rounded-xl font-futuristic font-bold text-sm tracking-wider bg-slate-800 text-slate-500 cursor-not-allowed transition flex items-center gap-2';
-    }
+    btnNext.disabled = candidates.length < 2;
 }
 
 function resetAllData() {
@@ -158,22 +151,21 @@ function resetAllData() {
         renderAttendanceList();
     }
 }
-
 // Halaman 2: Undian 1 (Urutan Pengambilan)
 function renderStage1Page() {
     const inputList = document.getElementById('stage1InputList');
     inputList.innerHTML = candidates.map(c => `
-        <div class="flex items-center gap-3 bg-slate-900/80 border border-slate-800 px-4 py-3 rounded-xl">
-            <span class="text-xs font-futuristic text-slate-400 w-16">Hadir #${c.attendanceOrder}</span>
-            <span class="font-semibold text-white">${escapeHtml(c.name)}</span>
+        <div>
+            <span style="color:#94a3b8; font-size:12px;">Hadir #${c.attendanceOrder}</span>
+            <span style="font-weight:bold; color:#fff;">${escapeHtml(c.name)}</span>
         </div>
     `).join('');
 
     if (stage1Completed) {
         renderStage1Results();
     } else {
-        document.getElementById('stage1ResultList').innerHTML = `<div class="text-center py-16 text-slate-500 border border-dashed border-slate-800 rounded-xl text-sm">Klik tombol "ACAK URUTAN" untuk menentukan giliran.</div>`;
-        setBtnToPage3State(false);
+        document.getElementById('stage1ResultList').innerHTML = `<div style="text-align:center; padding:2rem; color:#64748b;">Klik tombol "ACAK URUTAN" untuk menentukan giliran.</div>`;
+        document.getElementById('btnToPage3').disabled = true;
     }
 }
 
@@ -184,22 +176,19 @@ function runStage1Draw() {
     
     btn.disabled = true;
     let ticks = 0;
-    const maxTicks = 18;
 
     const anim = setInterval(() => {
         ticks++;
         playBeep(400 + ticks * 25, 0.04);
         const tempShuffled = shuffleArray(candidates);
         resultBox.innerHTML = tempShuffled.map(c => `
-            <div class="flex items-center justify-between bg-slate-900/60 border border-amber-500/20 px-4 py-3 rounded-xl opacity-80">
-                <div class="flex items-center gap-3">
-                    <span class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 font-futuristic font-bold flex items-center justify-center text-sm">?</span>
-                    <span class="font-semibold text-slate-300">${escapeHtml(c.name)}</span>
-                </div>
+            <div style="opacity:0.7;">
+                <span style="color:#fbbf24; font-weight:bold;">?</span>
+                <span style="color:#cbd5e1;">${escapeHtml(c.name)}</span>
             </div>
         `).join('');
 
-        if (ticks >= maxTicks) {
+        if (ticks >= 18) {
             clearInterval(anim);
             const finalOrder = shuffleArray(candidates);
             finalOrder.forEach((item, index) => {
@@ -213,29 +202,140 @@ function runStage1Draw() {
             document.getElementById('stage1AlgoBadge').textContent = algoVersion === 'crypto' ? 'Metode: Crypto CSPRNG' : 'Metode: Standard PRNG';
             playWinSound();
             renderStage1Results();
-            setBtnToPage3State(true);
+            document.getElementById('btnToPage3').disabled = false;
         }
     }, 70);
 }
 
 function renderStage1Results() {
     const sorted = [...candidates].sort((a, b) => a.drawTurnOrder - b.drawTurnOrder);
-    const resultBox = document.getElementById('stage1ResultList');
-    resultBox.innerHTML = sorted.map(c => `
-        <div class="flex items-center justify-between bg-slate-900 border border-amber-500/40 px-4 py-3 rounded-xl shadow-md">
-            <div class="flex items-center gap-3">
-                <span class="w-8 h-8 rounded-lg bg-amber-500 text-slate-950 font-futuristic font-black flex items-center justify-center text-sm">${c.drawTurnOrder}</span>
+    document.getElementById('stage1ResultList').innerHTML = sorted.map(c => `
+        <div style="border-color:rgba(245,158,11,0.5);">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <span style="background:#f59e0b; color:#020617; padding:4px 10px; border-radius:6px; font-weight:900;">${c.drawTurnOrder}</span>
                 <div>
-                    <p class="font-bold text-white">${escapeHtml(c.name)}</p>
-                    <p class="text-[11px] text-amber-400">Giliran Mengundi Ke-${c.drawTurnOrder} (Hadir #${c.attendanceOrder})</p>
+                    <p style="font-weight:bold; color:#fff; margin:0;">${escapeHtml(c.name)}</p>
+                    <p style="font-size:11px; color:#fbbf24; margin:0;">Giliran Mengundi Ke-${c.drawTurnOrder} (Hadir #${c.attendanceOrder})</p>
                 </div>
             </div>
         </div>
     `).join('');
-    setBtnToPage3State(true);
+    document.getElementById('btnToPage3').disabled = false;
 }
 
-function setBtnToPage3State(enabled) {
-    const btn = document.getElementById('btnToPage3');
-    if (enabled) {
-        btn.disabled = false;
+// Halaman 3: Undian 2 (Konter Nomor Urut)
+function initStage2Page() {
+    orderedCandidatesForStage2 = [...candidates].sort((a, b) => a.drawTurnOrder - b.drawTurnOrder);
+    const usedNumbers = orderedCandidatesForStage2.filter(c => c.officialNumber !== null).map(c => c.officialNumber);
+
+    availableNumbers = [];
+    for (let i = 1; i <= orderedCandidatesForStage2.length; i++) {
+        if (!usedNumbers.includes(i)) availableNumbers.push(i);
+    }
+
+    currentDrawerIndex = orderedCandidatesForStage2.findIndex(c => c.officialNumber === null);
+    updateStage2UI();
+}
+
+function updateStage2UI() {
+    const btnStart = document.getElementById('btnStartCounter');
+    const btnStop = document.getElementById('btnStopCounter');
+    const counterDisplay = document.getElementById('counterDisplay');
+    const remainingText = document.getElementById('remainingNumbersText');
+    const completionBox = document.getElementById('completionActions');
+
+    remainingText.textContent = availableNumbers.length > 0 
+        ? `Nomor tersedia: [ ${availableNumbers.map(n => formatTwoDigit(n)).join(', ')} ]`
+        : 'Semua nomor telah terdistribusi';
+
+    if (currentDrawerIndex !== -1 && currentDrawerIndex < orderedCandidatesForStage2.length) {
+        const activeCand = orderedCandidatesForStage2[currentDrawerIndex];
+        document.getElementById('activeDrawerOrder').textContent = `GILIRAN UNDI #${activeCand.drawTurnOrder}`;
+        document.getElementById('activeDrawerName').textContent = activeCand.name;
+
+        if (!isSpinning) {
+            counterDisplay.textContent = '00';
+            btnStart.disabled = false;
+            btnStop.disabled = true;
+        }
+        completionBox.classList.add('hidden');
+    } else {
+        document.getElementById('activeDrawerOrder').textContent = 'PENGUNDIAN SELESAI';
+        document.getElementById('activeDrawerName').textContent = 'Semua Calon Telah Mendapat Nomor';
+        counterDisplay.textContent = 'OK';
+        btnStart.disabled = true;
+        btnStop.disabled = true;
+        completionBox.classList.remove('hidden');
+    }
+    renderFinalResultsTable();
+}
+
+function startCounter() {
+    if (isSpinning || availableNumbers.length === 0) return;
+    isSpinning = true;
+    document.getElementById('btnStartCounter').disabled = true;
+    document.getElementById('btnStopCounter').disabled = false;
+    const counterDisplay = document.getElementById('counterDisplay');
+
+    counterInterval = setInterval(() => {
+        const randIdx = getRandomInt(availableNumbers.length);
+        currentDisplayedNum = availableNumbers[randIdx];
+        counterDisplay.textContent = formatTwoDigit(currentDisplayedNum);
+        playBeep(850, 0.03, 'square');
+    }, 55);
+}
+
+function stopCounter() {
+    if (!isSpinning) return;
+    clearInterval(counterInterval);
+    isSpinning = false;
+
+    const finalIdx = getRandomInt(availableNumbers.length);
+    const chosenNumber = availableNumbers[finalIdx];
+
+    document.getElementById('counterDisplay').textContent = formatTwoDigit(chosenNumber);
+    playWinSound();
+
+    const activeCand = orderedCandidatesForStage2[currentDrawerIndex];
+    activeCand.officialNumber = chosenNumber;
+    availableNumbers.splice(finalIdx, 1);
+
+    setTimeout(() => {
+        currentDrawerIndex = orderedCandidatesForStage2.findIndex(c => c.officialNumber === null);
+        updateStage2UI();
+    }, 900);
+}
+
+function renderFinalResultsTable() {
+    document.getElementById('finalResultsList').innerHTML = orderedCandidatesForStage2.map(c => {
+        const hasNum = c.officialNumber !== null;
+        return `
+            <div style="${hasNum ? 'border-color:rgba(16,185,129,0.6);' : ''}">
+                <div>
+                    <span style="font-size:11px; color:#94a3b8;">Giliran #${c.drawTurnOrder} • Hadir #${c.attendanceOrder}</span>
+                    <p style="font-weight:bold; font-size:16px; color:${hasNum ? '#fff' : '#94a3b8'}; margin:2px 0 0 0;">${escapeHtml(c.name)}</p>
+                </div>
+                <div style="background:${hasNum ? '#10b981' : '#1e293b'}; color:${hasNum ? '#020617' : '#64748b'}; width:48px; height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:20px;">
+                    ${hasNum ? formatTwoDigit(c.officialNumber) : '--'}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function resetStage2Only() {
+    if (isSpinning) clearInterval(counterInterval);
+    isSpinning = false;
+    candidates.forEach(c => c.officialNumber = null);
+    initStage2Page();
+}
+
+function formatTwoDigit(num) {
+    return num < 10 ? `0${num}` : `${num}`;
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
