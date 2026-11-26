@@ -4,72 +4,72 @@ let orderedCandidatesForStage2 = [];
 let currentDrawerIndex = 0;
 let availableNumbers = [];
 let counterInterval = null;
+let countdownTimer = null;
 let isSpinning = false;
-let currentDisplayedNum = null;
 let audioCtx = null;
+let musicBeatStep = 0;
 
-function playBeep(freq = 600, duration = 0.05, type = 'sine') {
+// =========================================
+// MUSIK ELEKTRONIK BARU & FANFARE KEMENANGAN
+// =========================================
+function initAudio() {
+    if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) audioCtx = new AudioContext();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+}
+
+function playTone(freq, duration, type = 'triangle', vol = 0.09, delay = 0) {
     try {
-        if (!audioCtx) {
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            if (AudioContext) audioCtx = new AudioContext();
-        }
-        if (audioCtx) {
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = type;
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + duration);
-        }
-    } catch (err) {}
+        initAudio();
+        if (!audioCtx) return;
+        const start = audioCtx.currentTime + delay;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, start);
+        gain.gain.setValueAtTime(vol, start);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(start);
+        osc.stop(start + duration);
+    } catch (e) {}
 }
 
-function playWinSound() {
-    playBeep(523.25, 0.15, 'triangle');
-    setTimeout(() => playBeep(659.25, 0.15, 'triangle'), 120);
-    setTimeout(() => playBeep(783.99, 0.3, 'triangle'), 240);
-}
-
-// 2 Versi Pengacakan Angka
-function getRandomInt(max) {
-    const rngEl = document.getElementById('rngVersion');
-    const version = rngEl ? rngEl.value : 'crypto';
-    
-    if (version === 'crypto' && window.crypto && window.crypto.getRandomValues) {
-        const array = new Uint32Array(1);
-        const maxUint32 = 0xFFFFFFFF;
-        const limit = maxUint32 - (maxUint32 % max);
-        let randomValue;
-        do {
-            window.crypto.getRandomValues(array);
-            randomValue = array;
-        } while (randomValue >= limit);
-        return randomValue % max;
-    } else {
-        return Math.floor(Math.random() * max);
+// Musik ketegangan dinamis (arpeggio bass & synth) saat angka berputar
+function playTensionMusicTick() {
+    const bassNotes = [110, 110, 130.81, 146.83, 110, 110, 164.81, 146.83]; // A2 - C3 - D3 - E3
+    const leadNotes = [440, 523.25, 659.25, 587.33, 440, 659.25, 783.99, 659.25];
+    const idx = musicBeatStep % bassNotes.length;
+    playTone(bassNotes[idx], 0.11, 'sawtooth', 0.05);
+    if (musicBeatStep % 2 === 0) {
+        playTone(leadNotes[idx], 0.08, 'triangle', 0.06);
     }
+    musicBeatStep++;
 }
 
-function goToPage(pageNum) {
-    document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
-    document.getElementById(`page-${pageNum}`).classList.add('active');
+// Musik fanfare megah saat nomor terkunci
+function playVictoryFanfare() {
+    const chord = [
+        { f: 523.25, d: 0.14, t: 0.00 }, // C5
+        { f: 659.25, d: 0.14, t: 0.12 }, // E5
+        { f: 783.99, d: 0.14, t: 0.24 }, // G5
+        { f: 1046.50, d: 0.55, t: 0.36 }, // C6
+        { f: 523.25, d: 0.55, t: 0.36 }, // Harmony C5
+        { f: 783.99, d: 0.55, t: 0.36 }  // Harmony G5
+    ];
+    chord.forEach(n => playTone(n.f, n.d, 'triangle', 0.11, n.t));
+}
 
-    for (let i = 1; i <= 3; i++) {
-        const ind = document.getElementById(`step-ind-${i}`);
-        if (!ind) continue;
-        if (i === pageNum) ind.className = 'flex items-center gap-2 text-cyan-400 font-bold';
-        else if (i < pageNum) ind.className = 'flex items-center gap-2 text-emerald-400';
-        else ind.className = 'flex items-center gap-2 text-slate-500';
-    }
-
-    if (pageNum === 2) renderStage1Page();
-    if (pageNum === 3) initStage2Page();
+// =========================================
+// TEMA TERANG / GELAP & FULLSCREEN AMAN
+// =========================================
+function toggleTheme() {
+    document.body.classList.toggle('light-theme');
+    const isLight = document.body.classList.contains('light-theme');
+    document.getElementById('btnThemeToggle').textContent = isLight ? '🌙 Tema Gelap' : '☀️ Tema Terang';
 }
 
 function toggleFullScreen() {
@@ -80,7 +80,47 @@ function toggleFullScreen() {
     }
 }
 
-// Halaman 1: Kehadiran Calon
+document.addEventListener('fullscreenchange', () => {
+    const btn = document.getElementById('btnFullscreen');
+    if (btn) btn.textContent = document.fullscreenElement ? '⛶ Keluar Fullscreen' : '⛶ Layar Penuh';
+});
+
+// =========================================
+// 2 VERSI ALGORITMA PENGACAKAN ANGKA
+// =========================================
+function getRandomInt(max) {
+    const version = document.getElementById('rngVersion').value;
+    if (version === 'crypto' && window.crypto && window.crypto.getRandomValues) {
+        const array = new Uint32Array(1);
+        const maxUint32 = 0xFFFFFFFF;
+        const limit = maxUint32 - (maxUint32 % max);
+        let randomValue;
+        do {
+            window.crypto.getRandomValues(array);
+            randomValue = array;
+        } while (randomValue >= limit);
+        return randomValue % max;
+    }
+    return Math.floor(Math.random() * max);
+}
+
+function goToPage(pageNum) {
+    document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
+    document.getElementById(`page-${pageNum}`).classList.add('active');
+
+    for (let i = 1; i <= 3; i++) {
+        const ind = document.getElementById(`step-ind-${i}`);
+        if (i === pageNum) ind.className = 'step-active';
+        else if (i < pageNum) ind.className = 'step-done';
+        else ind.className = 'step-muted';
+    }
+    if (pageNum === 2) renderStage1Page();
+    if (pageNum === 3) initStage2Page();
+}
+
+// =========================================
+// HALAMAN 1: KEHADIRAN CALON
+// =========================================
 function addCandidate(e) {
     if (e) e.preventDefault();
     const input = document.getElementById('candidateNameInput');
@@ -98,7 +138,7 @@ function addCandidate(e) {
     input.value = '';
     input.focus();
     stage1Completed = false;
-    playBeep(700, 0.06);
+    playTone(660, 0.08, 'sine', 0.08);
     renderAttendanceList();
 }
 
@@ -111,28 +151,25 @@ function removeCandidate(id) {
 
 function renderAttendanceList() {
     const listEl = document.getElementById('attendanceList');
-    const countEl = document.getElementById('candidateCount');
-    const btnNext = document.getElementById('btnToPage2');
-
-    countEl.textContent = candidates.length;
+    document.getElementById('candidateCount').textContent = candidates.length;
+    document.getElementById('btnToPage2').disabled = candidates.length < 2;
 
     if (candidates.length === 0) {
-        listEl.innerHTML = `<div style="text-align:center; padding:2rem; color:#64748b;">Belum ada calon yang dientri. Minimal 2 calon untuk memulai undian.</div>`;
+        listEl.innerHTML = `<div class="empty-state">Belum ada calon yang dientri. Minimal 2 calon untuk memulai undian.</div>`;
     } else {
         listEl.innerHTML = candidates.map(c => `
             <div>
-                <div style="display:flex; align-items:center; gap:12px;">
-                    <span style="background:rgba(6,182,212,0.2); color:#22d3ee; padding:4px 10px; border-radius:6px; font-weight:bold;">#${c.attendanceOrder}</span>
+                <div class="row-gap">
+                    <span class="accent-cyan font-bold">#${c.attendanceOrder}</span>
                     <div>
-                        <p style="font-weight:bold; color:#fff; margin:0;">${escapeHtml(c.name)}</p>
-                        <p style="font-size:11px; color:#94a3b8; margin:0;">Hadir ke-${c.attendanceOrder}</p>
+                        <p class="font-bold">${escapeHtml(c.name)}</p>
+                        <p class="text-xs label-muted">Hadir ke-${c.attendanceOrder}</p>
                     </div>
                 </div>
-                <button type="button" onclick="removeCandidate(${c.id})" style="background:transparent; color:#f43f5e; padding:4px 8px;">✕</button>
+                <button type="button" onclick="removeCandidate(${c.id})" class="btn-danger-sm">✕</button>
             </div>
         `).join('');
     }
-    btnNext.disabled = candidates.length < 2;
 }
 
 function resetAllData() {
@@ -142,8 +179,9 @@ function resetAllData() {
         renderAttendanceList();
     }
 }
+
 // =========================================
-// HELPER OVERLAY (MODEL D & H) + AUTO SIMPAN GAMBAR PNG
+// OVERLAY LAYAR PENUH (TERPISAH MODEL D & H)
 // =========================================
 function openFocusOverlay(stageLabel, candidateName, durationSec, stageType) {
     const overlay = document.getElementById('focusOverlay');
@@ -151,16 +189,17 @@ function openFocusOverlay(stageLabel, candidateName, durationSec, stageType) {
     const modH = document.getElementById('modelHContainer');
     const bar = document.getElementById('focusCountdownBar');
 
+    // Pastikan keduanya disembunyikan dulu agar tidak pernah bertumpuk
+    modD.classList.add('hidden');
+    modH.classList.add('hidden');
+    bar.classList.remove('amber-fill');
+    bar.style.width = '100%';
+
     document.getElementById('focusStageLabel').textContent = stageLabel;
     document.getElementById('focusCandidateName').textContent = candidateName;
     document.getElementById('focusStatusText').textContent = 'MENGACAK';
     document.getElementById('focusCountdownText').textContent = durationSec.toFixed(1);
     document.getElementById('autoSaveNotice').classList.add('hidden');
-
-    modD.classList.add('hidden');
-    modH.classList.add('hidden');
-    bar.classList.remove('amber-fill');
-    bar.style.width = '100%';
 
     if (stageType === 'D') {
         modD.classList.remove('hidden');
@@ -169,7 +208,7 @@ function openFocusOverlay(stageLabel, candidateName, durationSec, stageType) {
         digD.textContent = '0';
         digD.classList.remove('locked-final');
         document.getElementById('diamondOuter').classList.add('spinning');
-    } else {
+    } else if (stageType === 'H') {
         modH.classList.remove('hidden');
         const digH = document.getElementById('digitModelH');
         digH.textContent = '0';
@@ -191,7 +230,7 @@ function lockFocusOverlay(finalDigit, stageType) {
         const digD = document.getElementById('digitModelD');
         digD.textContent = `${finalDigit}`;
         digD.classList.add('locked-final');
-    } else {
+    } else if (stageType === 'H') {
         ['ripple1', 'ripple2', 'ripple3'].forEach(id => document.getElementById(id).classList.remove('active-wave'));
         const digH = document.getElementById('digitModelH');
         digH.textContent = `${finalDigit}`;
@@ -200,70 +239,39 @@ function lockFocusOverlay(finalDigit, stageType) {
 }
 
 function closeFocusOverlay() {
+    document.getElementById('modelDContainer').classList.add('hidden');
+    document.getElementById('modelHContainer').classList.add('hidden');
     document.getElementById('focusOverlay').classList.add('hidden');
 }
 
-// Generator Gambar Bukti Hasil Undian Otomatis (100% Offline via HTML5 Canvas)
 function autoDownloadResultImage(tahapJudul, namaCalon, nomorHasil, infoTambahan) {
     try {
         const canvas = document.createElement('canvas');
-        canvas.width = 1280;
-        canvas.height = 720;
+        canvas.width = 1280; canvas.height = 720;
         const ctx = canvas.getContext('2d');
-
-        // Latar Gelap Futuristik
         const grad = ctx.createRadialGradient(640, 360, 50, 640, 360, 750);
-        grad.addColorStop(0, '#0f2942');
-        grad.addColorStop(1, '#050814');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, 1280, 720);
+        grad.addColorStop(0, '#0f2942'); grad.addColorStop(1, '#050814');
+        ctx.fillStyle = grad; ctx.fillRect(0, 0, 1280, 720);
+        ctx.strokeStyle = '#22d3ee'; ctx.lineWidth = 6; ctx.strokeRect(35, 35, 1210, 650);
 
-        // Bingkai Neon
-        ctx.strokeStyle = '#22d3ee';
-        ctx.lineWidth = 6;
-        ctx.strokeRect(35, 35, 1210, 650);
-
-        // Header Pilkades
-        ctx.fillStyle = '#22d3ee';
-        ctx.font = 'bold 26px sans-serif';
-        ctx.textAlign = 'center';
+        ctx.fillStyle = '#22d3ee'; ctx.font = 'bold 26px sans-serif'; ctx.textAlign = 'center';
         ctx.fillText('PANITIA PEMILIHAN KEPALA DESA KEBONDOWO TAHUN 2026', 640, 105);
-
-        ctx.fillStyle = '#94a3b8';
-        ctx.font = 'bold 22px sans-serif';
+        ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 22px sans-serif';
         ctx.fillText(tahapJudul.toUpperCase(), 640, 150);
-
-        // Nama Calon
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 48px sans-serif';
+        ctx.fillStyle = '#ffffff'; ctx.font = 'bold 48px sans-serif';
         ctx.fillText(namaCalon, 640, 235);
 
-        // Lingkaran Angka Terpilih
-        ctx.beginPath();
-        ctx.arc(640, 415, 130, 0, Math.PI * 2);
-        ctx.fillStyle = '#020617';
-        ctx.fill();
-        ctx.lineWidth = 8;
-        ctx.strokeStyle = '#10b981';
-        ctx.stroke();
+        ctx.beginPath(); ctx.arc(640, 415, 130, 0, Math.PI * 2);
+        ctx.fillStyle = '#020617'; ctx.fill(); ctx.lineWidth = 8; ctx.strokeStyle = '#10b981'; ctx.stroke();
 
-        ctx.fillStyle = '#34d399';
-        ctx.font = 'bold 175px sans-serif';
-        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#34d399'; ctx.font = 'bold 175px sans-serif'; ctx.textBaseline = 'middle';
         ctx.fillText(`${nomorHasil}`, 640, 422);
 
-        // Footer Waktu & Keterangan
-        ctx.textBaseline = 'alphabetic';
-        ctx.fillStyle = '#fbbf24';
-        ctx.font = 'bold 24px sans-serif';
+        ctx.textBaseline = 'alphabetic'; ctx.fillStyle = '#fbbf24'; ctx.font = 'bold 24px sans-serif';
         ctx.fillText(infoTambahan, 640, 605);
+        ctx.fillStyle = '#64748b'; ctx.font = '18px sans-serif';
+        ctx.fillText(`Terekam Otomatis • ${new Date().toLocaleString('id-ID')}`, 640, 650);
 
-        const waktu = new Date().toLocaleString('id-ID');
-        ctx.fillStyle = '#64748b';
-        ctx.font = '18px sans-serif';
-        ctx.fillText(`Terekam Otomatis oleh Sistem Digital • ${waktu}`, 640, 650);
-
-        // Unduh File PNG Otomatis
         const cleanName = namaCalon.replace(/[^a-zA-Z0-9]/g, '_');
         const link = document.createElement('a');
         link.download = `${tahapJudul.replace(/\s+/g, '')}_No-${nomorHasil}_${cleanName}.png`;
@@ -271,21 +279,18 @@ function autoDownloadResultImage(tahapJudul, namaCalon, nomorHasil, infoTambahan
         link.click();
     } catch (e) {}
 }
+
 // =========================================
-// HALAMAN 2: UNDIAN 1 (MODEL D + TAHAN 3 DETIK + AUTO SAVE PNG)
+// HALAMAN 2: UNDIAN 1 (MODEL D)
 // =========================================
 let stage1AvailableTurns = [];
 let stage1DrawerIdx = 0;
-let stage1SpinInterval = null;
-let stage1CountdownTimer = null;
 let isStage1Spinning = false;
 
 function renderStage1Page() {
     const usedTurns = candidates.filter(c => c.drawTurnOrder !== null).map(c => c.drawTurnOrder);
     stage1AvailableTurns = [];
-    for (let i = 1; i <= candidates.length; i++) {
-        if (!usedTurns.includes(i)) stage1AvailableTurns.push(i);
-    }
+    for (let i = 1; i <= candidates.length; i++) if (!usedTurns.includes(i)) stage1AvailableTurns.push(i);
     stage1DrawerIdx = candidates.findIndex(c => c.drawTurnOrder === null);
     stage1Completed = (stage1DrawerIdx === -1 && candidates.length >= 2);
     updateStage1UI();
@@ -294,22 +299,18 @@ function renderStage1Page() {
 function updateStage1UI() {
     const btnStart = document.getElementById('btnStartStage1');
     const slotDisplay = document.getElementById('stage1SlotDisplay');
-    const remainingText = document.getElementById('stage1RemainingText');
     const btnToPage3 = document.getElementById('btnToPage3');
 
     document.getElementById('stage1CountdownText').textContent = '5.0';
     document.getElementById('stage1CountdownBar').style.width = '100%';
     document.getElementById('stage1StatusText').textContent = 'SIAP';
-
-    remainingText.textContent = stage1AvailableTurns.length > 0
-        ? `Urutan giliran tersedia: [ ${stage1AvailableTurns.join(', ')} ]`
-        : 'Semua calon telah mendapatkan urutan giliran';
+    document.getElementById('stage1RemainingText').textContent = stage1AvailableTurns.length > 0
+        ? `Urutan giliran tersedia: [ ${stage1AvailableTurns.join(', ')} ]` : 'Semua calon telah mendapatkan urutan giliran';
 
     if (stage1DrawerIdx !== -1 && stage1DrawerIdx < candidates.length) {
         const activeCand = candidates[stage1DrawerIdx];
         document.getElementById('stage1ActiveOrder').textContent = `HADIR #${activeCand.attendanceOrder}`;
         document.getElementById('stage1ActiveName').textContent = activeCand.name;
-
         if (!isStage1Spinning) {
             slotDisplay.textContent = '0';
             btnStart.disabled = false;
@@ -326,54 +327,58 @@ function updateStage1UI() {
         btnStart.textContent = 'TAHAP 1 SELESAI';
         btnToPage3.disabled = false;
     }
-    renderStage1ResultsList();
+
+    document.getElementById('stage1ResultList').innerHTML = candidates.map(c => `
+        <div>
+            <div>
+                <span class="text-xs label-muted">Urutan Hadir #${c.attendanceOrder}</span>
+                <p class="font-bold">${escapeHtml(c.name)}</p>
+            </div>
+            <div class="accent-amber font-futuristic font-bold" style="font-size:1.3rem;">
+                ${c.drawTurnOrder !== null ? c.drawTurnOrder : '-'}
+            </div>
+        </div>
+    `).join('');
 }
 
 function startStage1Spin() {
     if (isStage1Spinning || stage1AvailableTurns.length === 0) return;
     isStage1Spinning = true;
+    musicBeatStep = 0;
 
     const activeCand = candidates[stage1DrawerIdx];
-    const btnStart = document.getElementById('btnStartStage1');
-    const slotDisplay = document.getElementById('stage1SlotDisplay');
-    const digD = document.getElementById('digitModelD');
-    const focusCountdown = document.getElementById('focusCountdownText');
-    const focusBar = document.getElementById('focusCountdownBar');
-
-    btnStart.disabled = true;
+    document.getElementById('btnStartStage1').disabled = true;
     openFocusOverlay(`UNDIAN TAHAP 1 • HADIR #${activeCand.attendanceOrder}`, activeCand.name, 5.0, 'D');
 
     const duration = 5000;
     const startTime = Date.now();
+    let musicTick = 0;
 
-    stage1CountdownTimer = setInterval(() => {
-        const elapsed = Date.now() - startTime;
-        const remaining = Math.max(0, duration - elapsed);
-        focusCountdown.textContent = (remaining / 1000).toFixed(1);
-        focusBar.style.width = `${(remaining / duration) * 100}%`;
-        if (remaining <= 0) clearInterval(stage1CountdownTimer);
+    countdownTimer = setInterval(() => {
+        const remaining = Math.max(0, duration - (Date.now() - startTime));
+        document.getElementById('focusCountdownText').textContent = (remaining / 1000).toFixed(1);
+        document.getElementById('focusCountdownBar').style.width = `${(remaining / duration) * 100}%`;
+        if (remaining <= 0) clearInterval(countdownTimer);
     }, 80);
 
-    stage1SpinInterval = setInterval(() => {
+    counterInterval = setInterval(() => {
         const randDigit = getRandomInt(10);
-        digD.textContent = `${randDigit}`;
-        slotDisplay.textContent = `${randDigit}`;
-        playBeep(680, 0.03, 'square');
+        document.getElementById('digitModelD').textContent = `${randDigit}`;
+        document.getElementById('stage1SlotDisplay').textContent = `${randDigit}`;
+        if (musicTick++ % 3 === 0) playTensionMusicTick();
     }, 45);
 
     setTimeout(() => {
-        clearInterval(stage1SpinInterval);
-        clearInterval(stage1CountdownTimer);
+        clearInterval(counterInterval);
+        clearInterval(countdownTimer);
 
         const finalIdx = getRandomInt(stage1AvailableTurns.length);
         const chosenTurn = stage1AvailableTurns[finalIdx];
 
         lockFocusOverlay(chosenTurn, 'D');
-        slotDisplay.textContent = `${chosenTurn}`;
-        playWinSound();
-
-        // Simpan Bukti Gambar Otomatis saat Berhenti
-        autoDownloadResultImage('Undian 1 Urutan Ambil', activeCand.name, chosenTurn, `Giliran Pengambilan Nomor Ke-${chosenTurn} (Hadir #${activeCand.attendanceOrder})`);
+        document.getElementById('stage1SlotDisplay').textContent = `${chosenTurn}`;
+        playVictoryFanfare();
+        autoDownloadResultImage('Undian 1 Urutan Ambil', activeCand.name, chosenTurn, `Giliran Pengambilan Nomor Ke-${chosenTurn}`);
 
         candidates[stage1DrawerIdx].drawTurnOrder = chosenTurn;
         candidates[stage1DrawerIdx].officialNumber = null;
@@ -388,46 +393,21 @@ function startStage1Spin() {
     }, duration);
 }
 
-function renderStage1ResultsList() {
-    document.getElementById('stage1ResultList').innerHTML = candidates.map(c => {
-        const hasTurn = c.drawTurnOrder !== null;
-        return `
-            <div style="${hasTurn ? 'border-color:rgba(245,158,11,0.6);' : ''}">
-                <div>
-                    <span style="font-size:11px; color:#94a3b8;">Urutan Hadir #${c.attendanceOrder}</span>
-                    <p style="font-weight:bold; font-size:15px; color:${hasTurn ? '#fff' : '#94a3b8'}; margin:2px 0 0 0;">${escapeHtml(c.name)}</p>
-                </div>
-                <div style="background:${hasTurn ? '#f59e0b' : '#1e293b'}; color:${hasTurn ? '#020617' : '#64748b'}; width:42px; height:42px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:20px;">
-                    ${hasTurn ? c.drawTurnOrder : '-'}
-                </div>
-            </div>
-        `;
-    }).join('');
-}
-
 function resetStage1Only() {
-    clearInterval(stage1SpinInterval);
-    clearInterval(stage1CountdownTimer);
-    isStage1Spinning = false;
-    stage1Completed = false;
+    clearInterval(counterInterval); clearInterval(countdownTimer);
+    isStage1Spinning = false; stage1Completed = false;
     closeFocusOverlay();
     candidates.forEach(c => { c.drawTurnOrder = null; c.officialNumber = null; });
     renderStage1Page();
 }
-
 // =========================================
-// HALAMAN 3: UNDIAN 2 (MODEL H MAKSIMAL + TAHAN 3 DETIK + AUTO SAVE PNG)
+// HALAMAN 3: UNDIAN 2 (MODEL H)
 // =========================================
-let countdownTimer = null;
-
 function initStage2Page() {
     orderedCandidatesForStage2 = [...candidates].sort((a, b) => a.drawTurnOrder - b.drawTurnOrder);
     const usedNumbers = orderedCandidatesForStage2.filter(c => c.officialNumber !== null).map(c => c.officialNumber);
-
     availableNumbers = [];
-    for (let i = 1; i <= orderedCandidatesForStage2.length; i++) {
-        if (!usedNumbers.includes(i)) availableNumbers.push(i);
-    }
+    for (let i = 1; i <= orderedCandidatesForStage2.length; i++) if (!usedNumbers.includes(i)) availableNumbers.push(i);
     currentDrawerIndex = orderedCandidatesForStage2.findIndex(c => c.officialNumber === null);
     updateStage2UI();
 }
@@ -435,22 +415,18 @@ function initStage2Page() {
 function updateStage2UI() {
     const btnStart = document.getElementById('btnStartCounter');
     const counterDisplay = document.getElementById('counterDisplay');
-    const remainingText = document.getElementById('remainingNumbersText');
     const completionBox = document.getElementById('completionActions');
 
     document.getElementById('countdownText').textContent = '15.0';
     document.getElementById('countdownBar').style.width = '100%';
     document.getElementById('counterStatusText').textContent = 'SIAP';
-
-    remainingText.textContent = availableNumbers.length > 0 
-        ? `Nomor tersedia: [ ${availableNumbers.join(', ')} ]`
-        : 'Semua nomor telah terdistribusi';
+    document.getElementById('remainingNumbersText').textContent = availableNumbers.length > 0 
+        ? `Nomor tersedia: [ ${availableNumbers.join(', ')} ]` : 'Semua nomor telah terdistribusi';
 
     if (currentDrawerIndex !== -1 && currentDrawerIndex < orderedCandidatesForStage2.length) {
         const activeCand = orderedCandidatesForStage2[currentDrawerIndex];
         document.getElementById('activeDrawerOrder').textContent = `GILIRAN UNDI #${activeCand.drawTurnOrder}`;
         document.getElementById('activeDrawerName').textContent = activeCand.name;
-
         if (!isSpinning) {
             counterDisplay.textContent = '0';
             btnStart.disabled = false;
@@ -466,39 +442,45 @@ function updateStage2UI() {
         btnStart.textContent = 'UNDIAN SELESAI';
         completionBox.classList.remove('hidden');
     }
-    renderFinalResultsTable();
+
+    document.getElementById('finalResultsList').innerHTML = orderedCandidatesForStage2.map(c => `
+        <div>
+            <div>
+                <span class="text-xs label-muted">Giliran #${c.drawTurnOrder} • Hadir #${c.attendanceOrder}</span>
+                <p class="font-bold">${escapeHtml(c.name)}</p>
+            </div>
+            <div class="accent-emerald font-futuristic font-bold" style="font-size:1.35rem;">
+                ${c.officialNumber !== null ? c.officialNumber : '-'}
+            </div>
+        </div>
+    `).join('');
 }
 
 function startCounter() {
     if (isSpinning || availableNumbers.length === 0) return;
     isSpinning = true;
+    musicBeatStep = 0;
 
     const activeCand = orderedCandidatesForStage2[currentDrawerIndex];
-    const btnStart = document.getElementById('btnStartCounter');
-    const counterDisplay = document.getElementById('counterDisplay');
-    const digH = document.getElementById('digitModelH');
-    const focusCountdown = document.getElementById('focusCountdownText');
-    const focusBar = document.getElementById('focusCountdownBar');
-
-    btnStart.disabled = true;
+    document.getElementById('btnStartCounter').disabled = true;
     openFocusOverlay(`UNDIAN NOMOR URUT • GILIRAN #${activeCand.drawTurnOrder}`, activeCand.name, 15.0, 'H');
 
     const totalDuration = 15000;
     const startTime = Date.now();
+    let musicTick = 0;
 
     countdownTimer = setInterval(() => {
-        const elapsed = Date.now() - startTime;
-        const remaining = Math.max(0, totalDuration - elapsed);
-        focusCountdown.textContent = (remaining / 1000).toFixed(1);
-        focusBar.style.width = `${(remaining / totalDuration) * 100}%`;
+        const remaining = Math.max(0, totalDuration - (Date.now() - startTime));
+        document.getElementById('focusCountdownText').textContent = (remaining / 1000).toFixed(1);
+        document.getElementById('focusCountdownBar').style.width = `${(remaining / totalDuration) * 100}%`;
         if (remaining <= 0) clearInterval(countdownTimer);
     }, 80);
 
     counterInterval = setInterval(() => {
         const randDigit = getRandomInt(10);
-        digH.textContent = `${randDigit}`;
-        counterDisplay.textContent = `${randDigit}`;
-        playBeep(880, 0.03, 'square');
+        document.getElementById('digitModelH').textContent = `${randDigit}`;
+        document.getElementById('counterDisplay').textContent = `${randDigit}`;
+        if (musicTick++ % 3 === 0) playTensionMusicTick();
     }, 45);
 
     setTimeout(() => {
@@ -509,11 +491,9 @@ function startCounter() {
         const chosenNumber = availableNumbers[finalIdx];
 
         lockFocusOverlay(chosenNumber, 'H');
-        counterDisplay.textContent = `${chosenNumber}`;
-        playWinSound();
-
-        // Simpan Bukti Gambar Resmi Nomor Urut Otomatis saat Berhenti
-        autoDownloadResultImage('Penetapan Nomor Urut', activeCand.name, chosenNumber, `NOMOR URUT RESMI: ${chosenNumber} (Giliran Undi #${activeCand.drawTurnOrder})`);
+        document.getElementById('counterDisplay').textContent = `${chosenNumber}`;
+        playVictoryFanfare();
+        autoDownloadResultImage('Penetapan Nomor Urut', activeCand.name, chosenNumber, `NOMOR URUT RESMI: ${chosenNumber}`);
 
         activeCand.officialNumber = chosenNumber;
         availableNumbers.splice(finalIdx, 1);
@@ -527,26 +507,8 @@ function startCounter() {
     }, totalDuration);
 }
 
-function renderFinalResultsTable() {
-    document.getElementById('finalResultsList').innerHTML = orderedCandidatesForStage2.map(c => {
-        const hasNum = c.officialNumber !== null;
-        return `
-            <div style="${hasNum ? 'border-color:rgba(16,185,129,0.6);' : ''}">
-                <div>
-                    <span style="font-size:11px; color:#94a3b8;">Giliran #${c.drawTurnOrder} • Hadir #${c.attendanceOrder}</span>
-                    <p style="font-weight:bold; font-size:15px; color:${hasNum ? '#fff' : '#94a3b8'}; margin:2px 0 0 0;">${escapeHtml(c.name)}</p>
-                </div>
-                <div style="background:${hasNum ? '#10b981' : '#1e293b'}; color:${hasNum ? '#020617' : '#64748b'}; width:42px; height:42px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:20px;">
-                    ${hasNum ? c.officialNumber : '-'}
-                </div>
-            </div>
-        `;
-    }).join('');
-}
-
 function resetStage2Only() {
-    clearInterval(counterInterval);
-    clearInterval(countdownTimer);
+    clearInterval(counterInterval); clearInterval(countdownTimer);
     isSpinning = false;
     closeFocusOverlay();
     candidates.forEach(c => c.officialNumber = null);
@@ -559,9 +521,13 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// Kontrol Full Tombol ENTER PC
+// KONTROL TOMBOL ENTER (TIDAK MENGGANGGU FULLSCREEN)
 document.addEventListener('keydown', function (e) {
     if (e.key !== 'Enter') return;
+    if (document.activeElement && (document.activeElement.id === 'btnFullscreen' || document.activeElement.id === 'btnThemeToggle')) {
+        return;
+    }
+
     const activePage = document.querySelector('.page-section.active');
     if (!activePage) return;
 
@@ -582,5 +548,3 @@ document.addEventListener('keydown', function (e) {
         if (!btnStart2.disabled && !isSpinning) startCounter();
     }
 });
-
-
