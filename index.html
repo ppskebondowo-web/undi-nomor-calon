@@ -245,18 +245,29 @@
         </section>
 
     </main>
-    <!-- OVERLAY LAYAR PENUH SAAT KONTER BERPUTAR (HALAMAN 2 & 3) -->
+
+    <!-- OVERLAY LAYAR PENUH (MODEL D UNTUK HAL. 2 & MODEL H MAKSIMAL UNTUK HAL. 3) -->
     <div id="focusOverlay" class="focus-overlay hidden">
         <div class="focus-content text-center">
-            <span id="focusStageLabel" class="font-futuristic text-xs text-cyan-400">TAHAP PENGUNDIAN</span>
-            <h2 id="focusCandidateName" class="font-futuristic mt-3 mb-6">NAMA CALON</h2>
+            <span id="focusStageLabel" class="font-futuristic text-cyan-400">TAHAP PENGUNDIAN</span>
+            <h2 id="focusCandidateName" class="font-futuristic mt-3 mb-4">NAMA CALON</h2>
 
-            <div class="focus-counter-ring">
-                <div id="focusScannerRing" class="scanner-ring spinning"></div>
-                <div id="focusDigitDisplay" class="font-futuristic">0</div>
+            <!-- Wadah Model D (Halaman 2) -->
+            <div id="modelDContainer" class="model-d-stage hidden">
+                <div id="diamondOuter" class="diamond-outer"></div>
+                <div class="diamond-inner"></div>
+                <div id="digitModelD" class="font-futuristic num-d">0</div>
             </div>
 
-            <div class="timer-wrapper mt-6">
+            <!-- Wadah Model H Maksimal (Halaman 3) -->
+            <div id="modelHContainer" class="model-h-stage hidden">
+                <div id="ripple1" class="ripple"></div>
+                <div id="ripple2" class="ripple"></div>
+                <div id="ripple3" class="ripple"></div>
+                <div id="digitModelH" class="font-futuristic num-h">0</div>
+            </div>
+
+            <div class="timer-wrapper mt-4">
                 <div class="flex justify-between text-xs font-futuristic mb-2">
                     <span class="text-slate-400">STATUS: <strong id="focusStatusText" class="text-cyan-400">MENGACAK</strong></span>
                     <span class="text-amber-400">WAKTU: <strong id="focusCountdownText">0.0</strong> DETIK</span>
@@ -264,6 +275,7 @@
                 <div class="progress-track">
                     <div id="focusCountdownBar" class="progress-fill"></div>
                 </div>
+                <p id="autoSaveNotice" class="text-xs text-emerald-400 mt-3 hidden">📸 Bukti hasil undian otomatis tersimpan ke folder Downloads!</p>
             </div>
         </div>
     </div>
