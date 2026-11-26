@@ -142,7 +142,52 @@ function resetAllData() {
         renderAttendanceList();
     }
 }
-// Halaman 2: Undian 1 (Slot Reel 5 Detik - Berhenti Tiba-Tiba)
+// =========================================
+// HELPER OVERLAY LAYAR PENUH KONTER
+// =========================================
+function openFocusOverlay(stageLabel, candidateName, durationSec, isAmber = false) {
+    const overlay = document.getElementById('focusOverlay');
+    const digitBox = document.getElementById('focusDigitDisplay');
+    const ring = document.getElementById('focusScannerRing');
+    const bar = document.getElementById('focusCountdownBar');
+
+    document.getElementById('focusStageLabel').textContent = stageLabel;
+    document.getElementById('focusCandidateName').textContent = candidateName;
+    document.getElementById('focusStatusText').textContent = 'MENGACAK';
+    document.getElementById('focusCountdownText').textContent = durationSec.toFixed(1);
+
+    digitBox.textContent = '0';
+    digitBox.classList.remove('locked-final', 'amber-mode');
+    bar.classList.remove('amber-fill');
+    if (isAmber) {
+        digitBox.classList.add('amber-mode');
+        bar.classList.add('amber-fill');
+    }
+
+    ring.classList.add('spinning');
+    bar.style.width = '100%';
+    overlay.classList.remove('hidden');
+}
+
+function lockFocusOverlay(finalDigit) {
+    const digitBox = document.getElementById('focusDigitDisplay');
+    const ring = document.getElementById('focusScannerRing');
+
+    ring.classList.remove('spinning');
+    digitBox.textContent = `${finalDigit}`;
+    digitBox.classList.add('locked-final');
+    document.getElementById('focusStatusText').textContent = 'TERKUNCI!';
+    document.getElementById('focusCountdownText').textContent = '0.0';
+    document.getElementById('focusCountdownBar').style.width = '0%';
+}
+
+function closeFocusOverlay() {
+    document.getElementById('focusOverlay').classList.add('hidden');
+}
+
+// =========================================
+// HALAMAN 2: UNDIAN 1 (1 DIGIT 0-9 -> HASIL 1..N + TAHAN 3 DETIK)
+// =========================================
 let stage1AvailableTurns = [];
 let stage1DrawerIdx = 0;
 let stage1SpinInterval = null;
@@ -173,7 +218,7 @@ function updateStage1UI() {
     document.getElementById('stage1StatusText').textContent = 'SIAP';
 
     remainingText.textContent = stage1AvailableTurns.length > 0
-        ? `Urutan giliran tersedia: [ ${stage1AvailableTurns.map(n => formatTwoDigit(n)).join(', ')} ]`
+        ? `Urutan giliran tersedia: [ ${stage1AvailableTurns.join(', ')} ]`
         : 'Semua calon telah mendapatkan urutan giliran';
 
     if (stage1DrawerIdx !== -1 && stage1DrawerIdx < candidates.length) {
@@ -191,7 +236,7 @@ function updateStage1UI() {
         stage1Completed = true;
         document.getElementById('stage1ActiveOrder').textContent = 'UNDIAN TAHAP 1 SELESAI';
         document.getElementById('stage1ActiveName').textContent = 'Semua Calon Siap ke Tahap 2';
-        slotDisplay.textContent = 'OK';
+        slotDisplay.textContent = '✓';
         document.getElementById('stage1StatusText').textContent = 'SELESAI';
         btnStart.disabled = true;
         btnStart.textContent = 'TAHAP 1 SELESAI';
@@ -200,20 +245,19 @@ function updateStage1UI() {
 
     renderStage1ResultsList();
 }
-
 function startStage1Spin() {
     if (isStage1Spinning || stage1AvailableTurns.length === 0) return;
     isStage1Spinning = true;
 
+    const activeCand = candidates[stage1DrawerIdx];
     const btnStart = document.getElementById('btnStartStage1');
     const slotDisplay = document.getElementById('stage1SlotDisplay');
-    const statusText = document.getElementById('stage1StatusText');
-    const countdownText = document.getElementById('stage1CountdownText');
-    const countdownBar = document.getElementById('stage1CountdownBar');
+    const focusDigit = document.getElementById('focusDigitDisplay');
+    const focusCountdown = document.getElementById('focusCountdownText');
+    const focusBar = document.getElementById('focusCountdownBar');
 
     btnStart.disabled = true;
-    btnStart.textContent = 'SEDANG MENGACAK (5 DETIK)...';
-    statusText.textContent = 'BERPUTAR';
+    openFocusOverlay(`UNDIAN TAHAP 1 • HADIR #${activeCand.attendanceOrder}`, activeCand.name, 5.0, true);
 
     const duration = 5000;
     const startTime = Date.now();
@@ -221,13 +265,14 @@ function startStage1Spin() {
     stage1CountdownTimer = setInterval(() => {
         const elapsed = Date.now() - startTime;
         const remaining = Math.max(0, duration - elapsed);
-        countdownText.textContent = (remaining / 1000).toFixed(1);
-        countdownBar.style.width = `${(remaining / duration) * 100}%`;
+        focusCountdown.textContent = (remaining / 1000).toFixed(1);
+        focusBar.style.width = `${(remaining / duration) * 100}%`;
         if (remaining <= 0) clearInterval(stage1CountdownTimer);
     }, 80);
 
     stage1SpinInterval = setInterval(() => {
-        const randDigit = getRandomInt(10); // Mengacak semua angka 0 sampai 9
+        const randDigit = getRandomInt(10);
+        focusDigit.textContent = `${randDigit}`;
         slotDisplay.textContent = `${randDigit}`;
         playBeep(680, 0.03, 'square');
     }, 45);
@@ -235,28 +280,25 @@ function startStage1Spin() {
     setTimeout(() => {
         clearInterval(stage1SpinInterval);
         clearInterval(stage1CountdownTimer);
-        isStage1Spinning = false;
 
         const finalIdx = getRandomInt(stage1AvailableTurns.length);
         const chosenTurn = stage1AvailableTurns[finalIdx];
 
-        slotDisplay.textContent = formatTwoDigit(chosenTurn);
+        lockFocusOverlay(chosenTurn);
+        slotDisplay.textContent = `${chosenTurn}`;
         slotDisplay.classList.add('locked-slot');
-        statusText.textContent = 'TERKUNCI';
-        countdownText.textContent = '0.0';
-        countdownBar.style.width = '0%';
         playWinSound();
 
         candidates[stage1DrawerIdx].drawTurnOrder = chosenTurn;
         candidates[stage1DrawerIdx].officialNumber = null;
         stage1AvailableTurns.splice(finalIdx, 1);
 
-        renderStage1ResultsList();
-
         setTimeout(() => {
+            isStage1Spinning = false;
+            closeFocusOverlay();
             stage1DrawerIdx = candidates.findIndex(c => c.drawTurnOrder === null);
             updateStage1UI();
-        }, 1800);
+        }, 3000);
     }, duration);
 }
 
@@ -269,8 +311,8 @@ function renderStage1ResultsList() {
                     <span style="font-size:11px; color:#94a3b8;">Urutan Hadir #${c.attendanceOrder}</span>
                     <p style="font-weight:bold; font-size:16px; color:${hasTurn ? '#fff' : '#94a3b8'}; margin:2px 0 0 0;">${escapeHtml(c.name)}</p>
                 </div>
-                <div style="background:${hasTurn ? '#f59e0b' : '#1e293b'}; color:${hasTurn ? '#020617' : '#64748b'}; width:48px; height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:20px;">
-                    ${hasTurn ? formatTwoDigit(c.drawTurnOrder) : '--'}
+                <div style="background:${hasTurn ? '#f59e0b' : '#1e293b'}; color:${hasTurn ? '#020617' : '#64748b'}; width:48px; height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:22px;">
+                    ${hasTurn ? c.drawTurnOrder : '-'}
                 </div>
             </div>
         `;
@@ -282,13 +324,17 @@ function resetStage1Only() {
     clearInterval(stage1CountdownTimer);
     isStage1Spinning = false;
     stage1Completed = false;
+    closeFocusOverlay();
     candidates.forEach(c => {
         c.drawTurnOrder = null;
         c.officialNumber = null;
     });
     renderStage1Page();
 }
-// Halaman 3: Undian 2 (Konter Radar 15 Detik - Berhenti Tiba-Tiba)
+
+// =========================================
+// HALAMAN 3: UNDIAN 2 (1 DIGIT 0-9 -> HASIL 1..N + TAHAN 3 DETIK)
+// =========================================
 let countdownTimer = null;
 
 function initStage2Page() {
@@ -303,7 +349,6 @@ function initStage2Page() {
     currentDrawerIndex = orderedCandidatesForStage2.findIndex(c => c.officialNumber === null);
     updateStage2UI();
 }
-
 function updateStage2UI() {
     const btnStart = document.getElementById('btnStartCounter');
     const counterDisplay = document.getElementById('counterDisplay');
@@ -318,7 +363,7 @@ function updateStage2UI() {
     document.getElementById('counterStatusText').textContent = 'SIAP';
 
     remainingText.textContent = availableNumbers.length > 0 
-        ? `Nomor tersedia: [ ${availableNumbers.map(n => formatTwoDigit(n)).join(', ')} ]`
+        ? `Nomor tersedia: [ ${availableNumbers.join(', ')} ]`
         : 'Semua nomor telah terdistribusi';
 
     if (currentDrawerIndex !== -1 && currentDrawerIndex < orderedCandidatesForStage2.length) {
@@ -335,7 +380,7 @@ function updateStage2UI() {
     } else {
         document.getElementById('activeDrawerOrder').textContent = 'PENGUNDIAN SELESAI';
         document.getElementById('activeDrawerName').textContent = 'Semua Calon Telah Mendapat Nomor';
-        counterDisplay.textContent = 'OK';
+        counterDisplay.textContent = '✓';
         document.getElementById('counterStatusText').textContent = 'SELESAI';
         btnStart.disabled = true;
         btnStart.textContent = 'UNDIAN SELESAI';
@@ -348,17 +393,15 @@ function startCounter() {
     if (isSpinning || availableNumbers.length === 0) return;
     isSpinning = true;
 
+    const activeCand = orderedCandidatesForStage2[currentDrawerIndex];
     const btnStart = document.getElementById('btnStartCounter');
     const counterDisplay = document.getElementById('counterDisplay');
-    const scannerRing = document.getElementById('scannerRing');
-    const statusText = document.getElementById('counterStatusText');
-    const countdownText = document.getElementById('countdownText');
-    const countdownBar = document.getElementById('countdownBar');
+    const focusDigit = document.getElementById('focusDigitDisplay');
+    const focusCountdown = document.getElementById('focusCountdownText');
+    const focusBar = document.getElementById('focusCountdownBar');
 
     btnStart.disabled = true;
-    btnStart.textContent = 'SEDANG MENGACAK (15 DETIK)...';
-    scannerRing.classList.add('spinning');
-    statusText.textContent = 'BERPUTAR';
+    openFocusOverlay(`UNDIAN NOMOR URUT • GILIRAN #${activeCand.drawTurnOrder}`, activeCand.name, 15.0, false);
 
     const totalDuration = 15000;
     const startTime = Date.now();
@@ -366,13 +409,14 @@ function startCounter() {
     countdownTimer = setInterval(() => {
         const elapsed = Date.now() - startTime;
         const remaining = Math.max(0, totalDuration - elapsed);
-        countdownText.textContent = (remaining / 1000).toFixed(1);
-        countdownBar.style.width = `${(remaining / totalDuration) * 100}%`;
+        focusCountdown.textContent = (remaining / 1000).toFixed(1);
+        focusBar.style.width = `${(remaining / totalDuration) * 100}%`;
         if (remaining <= 0) clearInterval(countdownTimer);
     }, 80);
 
     counterInterval = setInterval(() => {
-        const randDigit = getRandomInt(10); // Mengacak semua angka 0 sampai 9
+        const randDigit = getRandomInt(10);
+        focusDigit.textContent = `${randDigit}`;
         counterDisplay.textContent = `${randDigit}`;
         playBeep(880, 0.03, 'square');
     }, 45);
@@ -380,28 +424,24 @@ function startCounter() {
     setTimeout(() => {
         clearInterval(counterInterval);
         clearInterval(countdownTimer);
-        isSpinning = false;
 
         const finalIdx = getRandomInt(availableNumbers.length);
         const chosenNumber = availableNumbers[finalIdx];
 
-        scannerRing.classList.remove('spinning');
-        counterDisplay.textContent = formatTwoDigit(chosenNumber);
+        lockFocusOverlay(chosenNumber);
+        counterDisplay.textContent = `${chosenNumber}`;
         counterDisplay.classList.add('locked-win');
-        statusText.textContent = 'TERKUNCI';
-        countdownText.textContent = '0.0';
-        countdownBar.style.width = '0%';
         playWinSound();
 
-        const activeCand = orderedCandidatesForStage2[currentDrawerIndex];
         activeCand.officialNumber = chosenNumber;
         availableNumbers.splice(finalIdx, 1);
-        renderFinalResultsTable();
 
         setTimeout(() => {
+            isSpinning = false;
+            closeFocusOverlay();
             currentDrawerIndex = orderedCandidatesForStage2.findIndex(c => c.officialNumber === null);
             updateStage2UI();
-        }, 2200);
+        }, 3000);
     }, totalDuration);
 }
 
@@ -414,8 +454,8 @@ function renderFinalResultsTable() {
                     <span style="font-size:11px; color:#94a3b8;">Giliran #${c.drawTurnOrder} • Hadir #${c.attendanceOrder}</span>
                     <p style="font-weight:bold; font-size:16px; color:${hasNum ? '#fff' : '#94a3b8'}; margin:2px 0 0 0;">${escapeHtml(c.name)}</p>
                 </div>
-                <div style="background:${hasNum ? '#10b981' : '#1e293b'}; color:${hasNum ? '#020617' : '#64748b'}; width:48px; height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:20px;">
-                    ${hasNum ? formatTwoDigit(c.officialNumber) : '--'}
+                <div style="background:${hasNum ? '#10b981' : '#1e293b'}; color:${hasNum ? '#020617' : '#64748b'}; width:48px; height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:22px;">
+                    ${hasNum ? c.officialNumber : '-'}
                 </div>
             </div>
         `;
@@ -426,12 +466,9 @@ function resetStage2Only() {
     clearInterval(counterInterval);
     clearInterval(countdownTimer);
     isSpinning = false;
+    closeFocusOverlay();
     candidates.forEach(c => c.officialNumber = null);
     initStage2Page();
-}
-
-function formatTwoDigit(num) {
-    return `${num}`; // Tampil 1 digit (0, 1, 2, 3, dst.)
 }
 
 function escapeHtml(text) {
@@ -440,7 +477,9 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// Kontrol Full Tombol ENTER PC
+// =========================================
+// KONTROL FULL TOMBOL ENTER PC
+// =========================================
 document.addEventListener('keydown', function (e) {
     if (e.key !== 'Enter') return;
 
@@ -463,7 +502,7 @@ document.addEventListener('keydown', function (e) {
         const btnToPage3 = document.getElementById('btnToPage3');
         if (!btnStart1.disabled && !isStage1Spinning) {
             startStage1Spin();
-        } else if (stage1Completed && !btnToPage3.disabled) {
+        } else if (stage1Completed && !btnToPage3.disabled && !isStage1Spinning) {
             goToPage(3);
         }
     } else if (activePage.id === 'page-3') {
