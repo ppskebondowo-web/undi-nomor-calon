@@ -181,7 +181,6 @@ function openFocusOverlay(stageLabel, candidateName, durationSec, stageType) {
     const modH = document.getElementById('modelHContainer');
     const bar = document.getElementById('focusCountdownBar');
 
-    // Pastikan keduanya disembunyikan dulu agar tidak pernah bertumpuk
     modD.classList.add('hidden');
     modH.classList.add('hidden');
     bar.classList.remove('amber-fill');
@@ -191,7 +190,6 @@ function openFocusOverlay(stageLabel, candidateName, durationSec, stageType) {
     document.getElementById('focusCandidateName').textContent = candidateName;
     document.getElementById('focusStatusText').textContent = 'MENGACAK';
     document.getElementById('focusCountdownText').textContent = durationSec.toFixed(1);
-    document.getElementById('autoSaveNotice').classList.add('hidden');
 
     if (stageType === 'D') {
         modD.classList.remove('hidden');
@@ -215,7 +213,7 @@ function lockFocusOverlay(finalDigit, stageType) {
     document.getElementById('focusStatusText').textContent = 'TERKUNCI!';
     document.getElementById('focusCountdownText').textContent = '0.0';
     document.getElementById('focusCountdownBar').style.width = '0%';
-   
+
     if (stageType === 'D') {
         document.getElementById('diamondOuter').classList.remove('spinning');
         const digD = document.getElementById('digitModelD');
@@ -234,7 +232,6 @@ function closeFocusOverlay() {
     document.getElementById('modelHContainer').classList.add('hidden');
     document.getElementById('focusOverlay').classList.add('hidden');
 }
-
 
 
 // =========================================
