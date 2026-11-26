@@ -323,3 +323,59 @@ footer {
     font-size: 0.75rem;
     color: #64748b;
 }
+/* =========================================
+   MEDIA UNDIAN 1: MESIN SLOT / REEL DIGITAL
+   ========================================= */
+.active-drawer-card.amber-card {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.14), rgba(234, 88, 12, 0.14));
+    border-color: rgba(251, 191, 36, 0.45);
+}
+
+.slot-machine-box {
+    position: relative;
+    width: 240px;
+    height: 150px;
+    margin: 1.5rem auto;
+    background: linear-gradient(180deg, #020617 0%, #0f172a 50%, #020617 100%);
+    border: 3px solid #f59e0b;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 35px rgba(245, 158, 11, 0.25), inset 0 0 25px rgba(0, 0, 0, 0.9);
+    overflow: hidden;
+}
+
+.slot-laser-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 2px;
+    background: rgba(245, 158, 11, 0.25);
+    pointer-events: none;
+}
+
+#stage1SlotDisplay {
+    font-size: 5rem;
+    font-weight: 900;
+    color: #fbbf24;
+    text-shadow: 0 0 25px rgba(251, 191, 36, 0.8);
+    z-index: 2;
+}
+
+#stage1SlotDisplay.locked-slot {
+    color: #34d399;
+    text-shadow: 0 0 30px rgba(52, 211, 153, 0.95);
+    transform: scale(1.08);
+}
+
+.progress-fill.amber-fill {
+    background: linear-gradient(90deg, #f59e0b, #fbbf24, #34d399);
+}
+
+.btn-amber:not(:disabled) {
+    background: linear-gradient(90deg, #f59e0b, #ea580c) !important;
+    color: #020617 !important;
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.4) !important;
+}
