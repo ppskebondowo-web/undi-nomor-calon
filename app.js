@@ -470,7 +470,7 @@ function startCounter() {
             closeFocusOverlay();
             currentDrawerIndex = orderedCandidatesForStage2.findIndex(c => c.officialNumber === null);
             updateStage2UI();
-        }, 3000);
+        }, 4000);
     }, totalDuration);
 }
 
