@@ -182,7 +182,7 @@ function updateStage1UI() {
         document.getElementById('stage1ActiveName').textContent = activeCand.name;
 
         if (!isStage1Spinning) {
-            slotDisplay.textContent = '00';
+            slotDisplay.textContent = '0';
             btnStart.disabled = false;
             btnStart.innerHTML = `PUTAR URUTAN AMBIL <span class="key-badge">ENTER ↵</span>`;
         }
@@ -227,8 +227,8 @@ function startStage1Spin() {
     }, 80);
 
     stage1SpinInterval = setInterval(() => {
-        const randIdx = getRandomInt(stage1AvailableTurns.length);
-        slotDisplay.textContent = formatTwoDigit(stage1AvailableTurns[randIdx]);
+        const randDigit = getRandomInt(10); // Mengacak semua angka 0 sampai 9
+        slotDisplay.textContent = `${randDigit}`;
         playBeep(680, 0.03, 'square');
     }, 45);
 
@@ -327,7 +327,7 @@ function updateStage2UI() {
         document.getElementById('activeDrawerName').textContent = activeCand.name;
 
         if (!isSpinning) {
-            counterDisplay.textContent = '00';
+            counterDisplay.textContent = '0';
             btnStart.disabled = false;
             btnStart.innerHTML = `MULAI PUTAR KONTER <span class="key-badge">ENTER ↵</span>`;
         }
@@ -372,9 +372,8 @@ function startCounter() {
     }, 80);
 
     counterInterval = setInterval(() => {
-        const randIdx = getRandomInt(availableNumbers.length);
-        currentDisplayedNum = availableNumbers[randIdx];
-        counterDisplay.textContent = formatTwoDigit(currentDisplayedNum);
+        const randDigit = getRandomInt(10); // Mengacak semua angka 0 sampai 9
+        counterDisplay.textContent = `${randDigit}`;
         playBeep(880, 0.03, 'square');
     }, 45);
 
@@ -432,7 +431,7 @@ function resetStage2Only() {
 }
 
 function formatTwoDigit(num) {
-    return num < 10 ? `0${num}` : `${num}`;
+    return `${num}`; // Tampil 1 digit (0, 1, 2, 3, dst.)
 }
 
 function escapeHtml(text) {
