@@ -495,4 +495,75 @@ header svg { width: 18px; height: 18px; }
 }
 
 .num-h { font-size: 15.5rem !important; }
+/* =========================================================
+   PERBAIKAN TATA LETAK AGAR RAPI & TIDAK BERTUMPUK
+   ========================================================= */
+
+/* 1. Perbaikan Header agar Judul Tidak Terpotong */
+header > div:first-child {
+    max-width: 1280px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0.75rem 2rem !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+header .w-10 {
+    flex-shrink: 0;
+}
+
+/* 2. Perbaikan Spasi Status & Timer (Halaman 2 & 3) */
+.timer-wrapper .flex {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100%;
+    gap: 1.5rem;
+    margin-bottom: 0.5rem !important;
+}
+
+/* 3. Perbaikan Baris Judul Daftar Calon & Tombol Reset (Halaman 1) */
+#page-1 .glass-panel > .flex:first-child {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 1rem !important;
+}
+
+/* 4. Perbaikan Posisi Tombol Lanjut ke Kanan (Halaman 1) */
+#page-1 .glass-panel > .flex:last-child {
+    display: flex !important;
+    justify-content: flex-end !important;
+    margin-top: 1.25rem !important;
+}
+
+/* 5. Perbaikan Tombol Navigasi Bawah (Halaman 2 & 3) */
+#page-2 > .mt-8,
+#page-3 > .mt-8 {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100%;
+    margin-top: 1.25rem !important;
+}
+
+#page-2 > .mt-8 > .flex {
+    display: flex !important;
+    gap: 0.75rem !important;
+    align-items: center !important;
+}
+
+/* 6. Penyesuaian Tinggi Daftar Agar Tidak Sesak */
+#attendanceList {
+    min-height: 180px;
+    max-height: 36vh !important;
+}
+
+#stage1ResultList,
+#finalResultsList {
+    max-height: 42vh !important;
+}
 
