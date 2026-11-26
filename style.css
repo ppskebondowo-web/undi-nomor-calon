@@ -590,4 +590,13 @@ header p {
     margin: 2px 0 0 0 !important;
     line-height: 1.2 !important;
 }
-
+/* Merapikan posisi Dropdown Metode Acak & Tombol Fullscreen agar sejajar 1 baris */
+header .justify-between {
+    width: auto !important;
+}
+header > div:first-child > div:last-child {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+    flex-wrap: nowrap !important;
+}
