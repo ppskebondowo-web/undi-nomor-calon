@@ -512,4 +512,31 @@ document.addEventListener('keydown', function (e) {
             startCounter();
         }
     }
+    // =========================================
+    // FUNGSI SCREENSHOT LAYAR (UNDUH GAMBAR PNG)
+    // =========================================
+    function takeScreenshot() {
+    if (typeof html2canvas === 'undefined') {
+        alert('Fitur screenshot membutuhkan koneksi internet pertama kali untuk memuat modul gambar, atau gunakan tombol PrintScreen / Win + Shift + S di PC.');
+        return;
+    }
+
+    playBeep(950, 0.08, 'sine'); // Suara jepretan kamera
+
+    // Ambil gambar seluruh halaman yang sedang tampil
+    html2canvas(document.body, {
+        backgroundColor: '#050814',
+        scale: 2, // Resolusi tinggi (HD) agar teks tajam
+        useCORS: true
+    }).then(canvas => {
+        const link = document.createElement('a');
+        const waktu = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+        link.download = `Hasil-Undian-Kades-Kebondowo-2026-${waktu}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    }).catch(err => {
+        alert('Gagal mengambil screenshot: ' + err);
+    });
+}
+
 });
