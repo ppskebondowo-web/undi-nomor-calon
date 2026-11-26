@@ -250,6 +250,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .num-h {
     position: relative;
     z-index: 2;
+    font-family: 'Segoe UI', 'Arial Black', Impact, sans-serif !important;
     font-size: 62vh; /* Angka raksasa memenuhi layar */
     font-weight: 900;
     color: var(--text-bright);
