@@ -72,14 +72,6 @@ function toggleTheme() {
     document.getElementById('btnThemeToggle').textContent = isLight ? '🌙 Tema Gelap' : '☀️ Tema Terang';
 }
 
-function toggleFullScreen() {
-    if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(() => {});
-    } else if (document.exitFullscreen) {
-        document.exitFullscreen();
-    }
-}
-
 document.addEventListener('fullscreenchange', () => {
     const btn = document.getElementById('btnFullscreen');
     if (btn) btn.textContent = document.fullscreenElement ? '⛶ Keluar Fullscreen' : '⛶ Layar Penuh';
