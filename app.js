@@ -62,6 +62,21 @@ function playVictoryFanfare() {
     ];
     chord.forEach(n => playTone(n.f, n.d, 'triangle', 0.11, n.t));
 }
+function startOverlayMusic() {
+    const audio = document.getElementById('bgMusicUndian');
+    if (audio) {
+        audio.currentTime = 0; // Mulai dari detik ke-0
+        audio.play().catch(() => {});
+    }
+}
+
+function stopOverlayMusic() {
+    const audio = document.getElementById('bgMusicUndian');
+    if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+    }
+}
 
 // =========================================
 // TEMA TERANG / GELAP & FULLSCREEN AMAN
@@ -205,11 +220,12 @@ function openFocusOverlay(stageLabel, candidateName, durationSec, stageType) {
         digH.classList.remove('locked-final');
         ['ripple1', 'ripple2', 'ripple3'].forEach(id => document.getElementById(id).classList.add('active-wave'));
     }
-
+    startOverlayMusic();
     overlay.classList.remove('hidden');
 }
 
 function lockFocusOverlay(finalDigit, stageType) {
+    stopOverlayMusic();
     document.getElementById('focusStatusText').textContent = 'TERKUNCI!';
     document.getElementById('focusCountdownText').textContent = '0.0';
     document.getElementById('focusCountdownBar').style.width = '0%';
@@ -228,6 +244,7 @@ function lockFocusOverlay(finalDigit, stageType) {
 }
 
 function closeFocusOverlay() {
+    stopOverlayMusic();
     document.getElementById('modelDContainer').classList.add('hidden');
     document.getElementById('modelHContainer').classList.add('hidden');
     document.getElementById('focusOverlay').classList.add('hidden');
@@ -318,8 +335,7 @@ function startStage1Spin() {
     counterInterval = setInterval(() => {
         const randDigit = getRandomInt(10);
         document.getElementById('digitModelD').textContent = `${randDigit}`;
-        document.getElementById('stage1SlotDisplay').textContent = `${randDigit}`;
-        if (musicTick++ % 3 === 0) playTensionMusicTick();
+        document.getElementById('stage1SlotDisplay').textContent = `${randDigit}`;        
     }, 45);
 
     setTimeout(() => {
@@ -433,7 +449,6 @@ function startCounter() {
         const randDigit = getRandomInt(10);
         document.getElementById('digitModelH').textContent = `${randDigit}`;
         document.getElementById('counterDisplay').textContent = `${randDigit}`;
-        if (musicTick++ % 3 === 0) playTensionMusicTick();
     }, 45);
 
     setTimeout(() => {
