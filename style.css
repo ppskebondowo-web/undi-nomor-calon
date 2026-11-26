@@ -1,685 +1,264 @@
-/* RESET & PAS 1 LAYAR PC (NO-SCROLL) */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+/* VARIABEL TEMA GELAP (DEFAULT) & TEMA TERANG */
+:root {
+    --bg-main: #050814;
+    --bg-header: rgba(2, 6, 23, 0.94);
+    --bg-panel: rgba(15, 23, 42, 0.88);
+    --bg-item: rgba(2, 6, 23, 0.82);
+    --text-main: #e2e8f0;
+    --text-bright: #ffffff;
+    --text-muted: #94a3b8;
+    --border-panel: rgba(56, 189, 248, 0.3);
+    --border-subtle: #1e293b;
+    --grid-line: rgba(255, 255, 255, 0.03);
+    --accent-cyan: #22d3ee;
+    --accent-emerald: #34d399;
+    --accent-amber: #fbbf24;
+    --overlay-bg: radial-gradient(circle at center, #09152b 0%, #02040a 100%);
 }
 
-html, body {
-    height: 100vh;
-    overflow: hidden; /* Hilangkan scroll atas-bawah */
+body.light-theme {
+    --bg-main: #f1f5f9;
+    --bg-header: rgba(255, 255, 255, 0.96);
+    --bg-panel: rgba(255, 255, 255, 0.95);
+    --bg-item: #f8fafc;
+    --text-main: #1e293b;
+    --text-bright: #0f172a;
+    --text-muted: #475569;
+    --border-panel: rgba(2, 132, 199, 0.35);
+    --border-subtle: #cbd5e1;
+    --grid-line: rgba(15, 23, 42, 0.04);
+    --accent-cyan: #0284c7;
+    --accent-emerald: #059669;
+    --accent-amber: #d97706;
+    --overlay-bg: radial-gradient(circle at center, #ffffff 0%, #e2e8f0 100%);
 }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100vh; overflow: hidden; }
 
 body {
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    background-color: #050814;
-    color: #e2e8f0;
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-main);
     background-image: 
-        radial-gradient(circle at 15% 50%, rgba(6, 182, 212, 0.15), transparent 30%),
-        radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.15), transparent 30%),
-        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-    background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+        linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+    background-size: 40px 40px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-.font-futuristic {
-    font-family: 'Orbitron', 'Courier New', monospace;
-    letter-spacing: 0.05em;
-}
-
-/* HEADER KOMPAK */
-header {
-    background: rgba(2, 6, 23, 0.92);
-    border-bottom: 1px solid rgba(6, 182, 212, 0.3);
-    flex-shrink: 0;
-}
-
-header > div:first-child {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 0.6rem 1.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-header h1 { font-size: 1.15rem; color: #ffffff; }
-header h1 span { color: #22d3ee; }
-header p { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; }
-
-header .w-10 {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    background: linear-gradient(135deg, #06b6d4, #10b981);
-    color: #020617;
-    font-weight: 900;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-select {
-    background: #0f172a;
-    color: #22d3ee;
-    border: 1px solid #334155;
-    padding: 0.35rem 0.65rem;
-    border-radius: 6px;
-    font-weight: 600;
-    font-size: 0.75rem;
-    cursor: pointer;
-}
-
-header > div:last-child {
-    background: rgba(15, 23, 42, 0.85);
-    border-top: 1px solid #1e293b;
-}
-
-header > div:last-child > div {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 0.45rem 1.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.75rem;
-}
-
-.h-px { height: 1px; background: #334155; flex: 1; margin: 0 1rem; }
-.text-cyan-400 { color: #22d3ee; }
-.text-emerald-400 { color: #34d399; }
-.text-amber-400 { color: #fbbf24; }
-.text-slate-400 { color: #94a3b8; }
-.text-slate-500 { color: #64748b; }
+.font-futuristic { font-family: 'Orbitron', 'Courier New', monospace; letter-spacing: 0.05em; }
+.hidden { display: none !important; }
+.text-center { text-align: center; }
 .text-xs { font-size: 0.75rem; }
 .font-bold { font-weight: 700; }
+.w-full { width: 100%; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-3 { margin-top: 0.75rem; }
+.mt-4 { margin-top: 1rem; }
+.mb-1 { margin-bottom: 0.25rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 0.75rem; }
 
-/* MAIN AREA PAS DI TENGAH LAYAR */
+.accent-cyan { color: var(--accent-cyan); }
+.accent-emerald { color: var(--accent-emerald); }
+.accent-amber { color: var(--accent-amber); }
+.label-muted { color: var(--text-muted); }
+
+/* HEADER & STEPPER */
+header { background: var(--bg-header); border-bottom: 1px solid var(--border-panel); flex-shrink: 0; }
+.header-inner {
+    max-width: 1280px; margin: 0 auto; padding: 0.65rem 1.75rem;
+    display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+}
+.brand-group { display: flex; align-items: center; gap: 0.85rem; }
+.logo-box {
+    width: 38px; height: 38px; border-radius: 8px;
+    background: linear-gradient(135deg, #06b6d4, #10b981);
+    color: #020617; font-weight: 900; display: flex; align-items: center; justify-content: center;
+}
+.brand-text h1 { font-size: 1.15rem; color: var(--text-bright); line-height: 1.2; }
+.brand-text h1 span { color: var(--accent-cyan); }
+.brand-text p { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; }
+
+.controls-group { display: flex; align-items: center; gap: 0.65rem; }
+.algo-box { display: flex; align-items: center; gap: 0.4rem; }
+select {
+    background: var(--bg-item); color: var(--accent-cyan); border: 1px solid var(--border-subtle);
+    padding: 0.4rem 0.6rem; border-radius: 7px; font-weight: 600; font-size: 0.75rem; cursor: pointer;
+}
+
+.stepper-bar { background: var(--bg-item); border-top: 1px solid var(--border-subtle); }
+.stepper-inner {
+    max-width: 920px; margin: 0 auto; padding: 0.45rem 1.5rem;
+    display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem;
+}
+.step-line { height: 1px; background: var(--border-subtle); flex: 1; margin: 0 1rem; }
+.step-active { color: var(--accent-cyan); font-weight: 700; }
+.step-done { color: var(--accent-emerald); font-weight: 700; }
+.step-muted { color: var(--text-muted); }
+
+/* MAIN & PANEL */
 main {
-    max-width: 1240px;
-    width: 100%;
-    margin: 0 auto;
-    padding: 0.75rem 1.5rem;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    overflow: hidden;
+    max-width: 1240px; width: 100%; margin: 0 auto; padding: 0.75rem 1.75rem;
+    flex: 1; display: flex; flex-direction: column; justify-content: center; overflow: hidden;
 }
+.page-section { display: none; width: 100%; }
+.page-section.active { display: block; }
+.section-head { margin-bottom: 0.85rem; }
+.section-head h2 { font-size: 1.45rem; color: var(--text-bright); margin: 0.25rem 0; }
+.badge-tag { font-size: 0.7rem; color: var(--accent-cyan); text-transform: uppercase; }
+.badge-tag.amber { color: var(--accent-amber); }
+.badge-tag.emerald { color: var(--accent-emerald); }
 
-.page-section {
-    display: none;
-    width: 100%;
-    animation: fadeIn 0.3s ease-out forwards;
-}
-
-.page-section.active {
-    display: block;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.text-center { text-align: center; }
-.mb-8 { margin-bottom: 1rem; }
-.mb-6 { margin-bottom: 0.85rem; }
-.mb-4 { margin-bottom: 0.75rem; }
-.mt-3 { margin-top: 0.4rem; }
-.mt-6 { margin-top: 0.85rem; }
-.mt-8 { margin-top: 1rem; }
-
-h2 {
-    font-size: 1.5rem;
-    color: #ffffff;
-    text-shadow: 0 0 15px rgba(34, 211, 238, 0.5);
-}
+.grid-12 { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1.25rem; }
+.col-5 { grid-column: span 5; }
+.col-6 { grid-column: span 6; }
+.col-7 { grid-column: span 7; }
 
 .glass-panel {
-    background: rgba(15, 23, 42, 0.88);
-    border: 1px solid rgba(56, 189, 248, 0.3);
-    border-radius: 14px;
-    padding: 1.15rem 1.35rem;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+    background: var(--bg-panel); border: 1px solid var(--border-panel);
+    border-radius: 14px; padding: 1.15rem 1.35rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
 }
+.flex-col-between { display: flex; flex-direction: column; justify-content: space-between; }
+.row-between { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+.row-end { display: flex; justify-content: flex-end; width: 100%; }
+.row-gap { display: flex; align-items: center; gap: 0.65rem; }
 
-.grid { display: grid; gap: 1.25rem; }
-
-@media (min-width: 1024px) {
-    .lg\:grid-cols-12 { grid-template-columns: repeat(12, 1fr); }
-    .lg\:col-span-5 { grid-column: span 5; }
-    .lg\:col-span-6 { grid-column: span 6; }
-    .lg\:col-span-7 { grid-column: span 7; }
-}
-/* INPUT, TOMBOL & DAFTAR CALON KOMPAK */
+/* INPUT & TOMBOL */
 input[type="text"] {
-    width: 100%;
-    background: #020617;
-    border: 1px solid #334155;
-    color: #ffffff;
-    padding: 0.7rem 0.9rem;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    margin-top: 0.35rem;
-    margin-bottom: 0.75rem;
+    width: 100%; background: var(--bg-item); border: 1px solid var(--border-subtle);
+    color: var(--text-bright); padding: 0.7rem 0.9rem; border-radius: 8px;
+    font-size: 0.95rem; margin: 0.35rem 0 0.75rem 0;
 }
-
-input[type="text"]:focus {
-    outline: none;
-    border-color: #22d3ee;
-}
+input[type="text"]:focus { outline: none; border-color: var(--accent-cyan); }
 
 button {
-    cursor: pointer;
-    border: none;
-    border-radius: 8px;
-    padding: 0.65rem 1.1rem;
-    font-weight: 700;
-    font-size: 0.85rem;
-    transition: all 0.2s ease;
-    background: #1e293b;
-    color: #e2e8f0;
+    cursor: pointer; border: 1px solid var(--border-subtle); border-radius: 8px;
+    padding: 0.6rem 1rem; font-weight: 700; font-size: 0.8rem;
+    background: var(--bg-item); color: var(--text-main); transition: 0.2s;
 }
-
-button:hover:not(:disabled) { filter: brightness(1.15); }
+button:hover:not(:disabled) { filter: brightness(1.1); }
 button:disabled { opacity: 0.45; cursor: not-allowed; }
 
-button[type="submit"], #btnToPage2:not(:disabled) {
-    background: linear-gradient(90deg, #06b6d4, #10b981);
-    color: #020617;
+.btn-primary:not(:disabled) { background: linear-gradient(90deg, #06b6d4, #10b981); color: #020617; border: none; }
+.btn-amber:not(:disabled) { background: linear-gradient(90deg, #f59e0b, #ea580c); color: #020617; border: none; }
+.btn-emerald:not(:disabled) { background: linear-gradient(90deg, #10b981, #0d9488); color: #020617; border: none; }
+.btn-danger-sm { padding: 0.35rem 0.7rem; font-size: 0.72rem; color: #f43f5e; }
+.key-badge {
+    background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 0.12rem 0.4rem; border-radius: 4px; font-size: 0.68rem; margin-left: 0.35rem;
 }
-button[type="submit"] { width: 100%; }
-
-#btnToPage3:not(:disabled), #btnStartCounter:not(:disabled) {
-    background: linear-gradient(90deg, #10b981, #0d9488);
-    color: #020617;
+/* DAFTAR CALON & MEDIA KONTER HALAMAN 2 & 3 */
+.scroll-list { max-height: 41vh; overflow-y: auto; padding-right: 4px; }
+.scroll-list > div {
+    display: flex; justify-content: space-between; align-items: center;
+    background: var(--bg-item); border: 1px solid var(--border-subtle);
+    padding: 0.55rem 0.85rem; border-radius: 8px; margin-bottom: 0.45rem;
 }
+.empty-state { justify-content: center !important; padding: 2rem !important; color: var(--text-muted); }
 
-.btn-amber:not(:disabled) {
-    background: linear-gradient(90deg, #f59e0b, #ea580c) !important;
-    color: #020617 !important;
-}
-
-header svg { width: 18px; height: 18px; }
-
-/* DAFTAR CALON DENGAN SCROLL INTERNAL JIKA CALON BANYAK */
-#attendanceList, #stage1ResultList, #finalResultsList {
-    max-height: 44vh;
-    overflow-y: auto;
-    padding-right: 4px;
-}
-
-#attendanceList > div, #stage1ResultList > div, #finalResultsList > div {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(2, 6, 23, 0.8);
-    border: 1px solid #1e293b;
-    padding: 0.55rem 0.85rem;
-    border-radius: 8px;
-    margin-bottom: 0.45rem;
-}
-
-/* KARTU CALON AKTIF */
 .active-drawer-card {
-    background: linear-gradient(135deg, rgba(6, 182, 212, 0.12), rgba(16, 185, 129, 0.12));
-    border: 1px solid rgba(34, 211, 238, 0.4);
-    border-radius: 10px;
-    padding: 0.55rem 0.85rem;
+    background: var(--bg-item); border: 1px solid var(--accent-cyan);
+    border-radius: 10px; padding: 0.5rem 0.85rem;
 }
-.active-drawer-card.amber-card {
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.14), rgba(234, 88, 12, 0.14));
-    border-color: rgba(251, 191, 36, 0.45);
-}
-.active-drawer-card h3 { font-size: 1.25rem; color: #ffffff; margin-top: 0.15rem; }
+.active-drawer-card.amber-card { border-color: var(--accent-amber); }
+.active-drawer-card h3 { font-size: 1.2rem; color: var(--text-bright); margin-top: 0.15rem; }
 
-/* MEDIA UNDIAN 1 (HALAMAN 2): CAPSULE SLOT */
 .slot-machine-box {
-    position: relative;
-    width: 190px;
-    height: 125px;
-    margin: 0.85rem auto;
-    background: linear-gradient(180deg, #020617 0%, #0f172a 50%, #020617 100%);
-    border: 3px solid #f59e0b;
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 0 25px rgba(245, 158, 11, 0.25);
+    width: 180px; height: 115px; margin: 0.75rem auto;
+    background: var(--bg-item); border: 3px solid var(--accent-amber);
+    border-radius: 14px; display: flex; align-items: center; justify-content: center;
 }
+#stage1SlotDisplay { font-size: 4.2rem; font-weight: 900; color: var(--accent-amber); }
 
-#stage1SlotDisplay {
-    font-size: 4.5rem;
-    font-weight: 900;
-    color: #fbbf24;
-    text-shadow: 0 0 20px rgba(251, 191, 36, 0.8);
-}
-
-/* =========================================================
-   MODEL KONTER BARU HALAMAN 3: CYBER SPLIT DIGITAL MODULE
-   ========================================================= */
 .cyber-counter-module {
-    position: relative;
-    width: 210px;
-    height: 140px;
-    margin: 0.85rem auto;
-    background: linear-gradient(180deg, #061816 0%, #020617 49%, #092420 51%, #020617 100%);
-    border: 3px solid #10b981;
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 0 30px rgba(16, 185, 129, 0.3), inset 0 0 20px rgba(16, 185, 129, 0.2);
+    position: relative; width: 195px; height: 125px; margin: 0.75rem auto;
+    background: var(--bg-item); border: 3px solid var(--accent-emerald);
+    border-radius: 14px; display: flex; align-items: center; justify-content: center;
 }
-
-/* Garis Engsel Tengah Digital Flip */
 .cyber-counter-module::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 50%;
-    height: 2px;
-    background: rgba(16, 185, 129, 0.45);
-    box-shadow: 0 0 8px #10b981;
+    content: ""; position: absolute; left: 0; right: 0; top: 50%;
+    height: 2px; background: rgba(16, 185, 129, 0.4);
 }
+#counterDisplay { font-size: 4.6rem; font-weight: 900; color: var(--accent-emerald); z-index: 2; }
 
-/* Aksen Sudut Futuristik */
-.cyber-counter-module::before {
-    content: "NO. URUT";
-    position: absolute;
-    top: 6px;
-    left: 10px;
-    font-size: 0.6rem;
-    letter-spacing: 0.12em;
-    color: #34d399;
-    font-family: 'Orbitron', monospace;
-}
-
-#counterDisplay {
-    font-size: 5.2rem;
-    font-weight: 900;
-    color: #34d399;
-    text-shadow: 0 0 25px rgba(52, 211, 153, 0.9);
-    z-index: 2;
-}
-
-/* TIMER & TOMBOL ENTER */
-.timer-wrapper { max-width: 340px; margin: 0 auto; }
-.progress-track { width: 100%; height: 8px; background: #020617; border: 1px solid #334155; border-radius: 999px; overflow: hidden; }
+.timer-wrapper { max-width: 360px; margin: 0 auto; }
+.progress-track { width: 100%; height: 9px; background: var(--bg-item); border: 1px solid var(--border-subtle); border-radius: 999px; overflow: hidden; }
 .progress-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #10b981, #22d3ee, #f59e0b); }
 .progress-fill.amber-fill { background: linear-gradient(90deg, #f59e0b, #fbbf24, #34d399); }
 
-.btn-enter-action {
-    width: 100%;
-    padding: 0.8rem 1.2rem;
-    font-size: 0.95rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.6rem;
-}
-
-.key-badge {
-    background: rgba(2, 6, 23, 0.45);
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    color: #ffffff;
-    font-size: 0.68rem;
-    padding: 0.15rem 0.45rem;
-    border-radius: 5px;
-    font-family: monospace;
-}
-
-/* =========================================================
-   OVERLAY LAYAR PENUH: MODEL D (HAL. 2) & MODEL H (HAL. 3)
-   ========================================================= */
+/* OVERLAY LAYAR PENUH (MEPET ATAS-BAWAH & TIDAK BERTUMPUK) */
 .focus-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    background: radial-gradient(circle at center, #09152b 0%, #02040a 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1.5rem;
+    position: fixed; inset: 0; z-index: 9999;
+    background: var(--overlay-bg);
+    padding: 2.5vh 3vw;
+    display: flex; align-items: center; justify-content: center;
 }
 
-.focus-content { max-width: 950px; width: 100%; }
-#focusStageLabel { font-size: 1rem; letter-spacing: 0.15em; }
-.focus-content h2 { font-size: 2.8rem; color: #ffffff; text-shadow: 0 0 25px rgba(34, 211, 238, 0.85); }
+.focus-content {
+    width: 100%; height: 94vh;
+    display: flex; flex-direction: column;
+    justify-content: space-between; align-items: center;
+}
 
-/* MODEL D: DIAMOND ROTATING PRISM (HALAMAN 2) */
-.model-d-stage {
+.focus-top { text-align: center; }
+#focusStageLabel { font-size: 2.3vh; letter-spacing: 0.18em; display: block; }
+.focus-top h2 { font-size: 5.5vh; color: var(--text-bright); margin-top: 0.5vh; }
+
+.model-stage {
+    flex: 1; width: 100%;
+    display: flex; align-items: center; justify-content: center;
     position: relative;
-    width: 340px;
-    height: 340px;
-    margin: 1.5rem auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
+/* MODEL D (HALAMAN 2) */
 .diamond-outer {
-    position: absolute;
-    width: 245px;
-    height: 245px;
-    border: 5px solid #f59e0b;
-    border-radius: 22px;
-    transform: rotate(45deg);
-    box-shadow: 0 0 45px rgba(245, 158, 11, 0.55);
+    position: absolute; width: 38vh; height: 38vh;
+    border: 6px solid #f59e0b; border-radius: 24px;
+    transform: rotate(45deg); box-shadow: 0 0 45px rgba(245, 158, 11, 0.5);
 }
-
-.diamond-outer.spinning { animation: spinDiamond 2.5s linear infinite; }
+.diamond-outer.spinning { animation: spinDiamond 2.2s linear infinite; }
 @keyframes spinDiamond { 0% { transform: rotate(45deg); } 100% { transform: rotate(405deg); } }
 
 .diamond-inner {
-    position: absolute;
-    width: 225px;
-    height: 225px;
-    background: #020617;
-    border: 3px dashed #fbbf24;
-    border-radius: 18px;
-    transform: rotate(45deg);
+    position: absolute; width: 35vh; height: 35vh;
+    background: var(--bg-main); border: 3px dashed #fbbf24;
+    border-radius: 20px; transform: rotate(45deg);
 }
+.num-d { position: relative; z-index: 2; font-size: 24vh; font-weight: 900; color: var(--accent-amber); line-height: 1; }
+.num-d.locked-final { color: var(--accent-emerald); transform: scale(1.1); transition: 0.2s; }
 
-.num-d {
-    position: relative;
-    z-index: 2;
-    font-size: 13rem;
-    font-weight: 900;
-    color: #fbbf24;
-    text-shadow: 0 0 45px rgba(251, 191, 36, 0.95);
-    line-height: 1;
-}
-
-.num-d.locked-final {
-    color: #34d399;
-    text-shadow: 0 0 65px rgba(52, 211, 153, 1);
-    transform: scale(1.1);
-    transition: all 0.2s ease;
-}
-
-/* MODEL H: SONAR SHOCKWAVE RIPPLE MAKSIMAL (HALAMAN 3) */
-.model-h-stage {
-    position: relative;
-    width: 460px;
-    height: 430px;
-    margin: 0.5rem auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
+/* MODEL H MAKSIMAL (HALAMAN 3) */
 .ripple {
-    position: absolute;
-    width: 250px;
-    height: 250px;
-    border-radius: 50%;
-    border: 4px solid #10b981;
-    opacity: 0;
+    position: absolute; width: 44vh; height: 44vh; border-radius: 50%;
+    border: 5px solid var(--accent-emerald); opacity: 0;
 }
-
-.ripple.active-wave { animation: rippleWave 1.5s ease-out infinite; }
-.ripple:nth-child(2).active-wave { animation-delay: 0.5s; border-color: #22d3ee; }
-.ripple:nth-child(3).active-wave { animation-delay: 1s; border-color: #34d399; }
-
-@keyframes rippleWave {
-    0% { transform: scale(0.75); opacity: 0.95; }
-    100% { transform: scale(1.85); opacity: 0; }
-}
+.ripple.active-wave { animation: rippleWave 1.4s ease-out infinite; }
+.ripple:nth-child(2).active-wave { animation-delay: 0.45s; border-color: var(--accent-cyan); }
+.ripple:nth-child(3).active-wave { animation-delay: 0.9s; }
+@keyframes rippleWave { 0% { transform: scale(0.75); opacity: 0.95; } 100% { transform: scale(1.85); opacity: 0; } }
 
 .num-h {
-    position: relative;
-    z-index: 2;
-    font-size: 19rem; /* ANGKA SUPER MAKSIMAL MEMENUHI LAYAR */
-    font-weight: 900;
-    color: #ffffff;
-    text-shadow: 0 0 40px #10b981, 0 0 85px #22d3ee;
-    line-height: 1;
+    position: relative; z-index: 2; font-size: 46vh; font-weight: 900;
+    color: var(--text-bright); text-shadow: 0 0 45px var(--accent-emerald); line-height: 0.9;
+}
+.num-h.locked-final { color: var(--accent-amber); text-shadow: 0 0 65px var(--accent-amber); transform: scale(1.08); transition: 0.2s; }
+
+.focus-bottom { width: 85%; max-width: 920px; text-align: center; }
+.focus-timer-row { font-size: 2.2vh; margin-bottom: 1vh; }
+.focus-track { height: 16px; }
+
+footer {
+    border-top: 1px solid var(--border-subtle); padding: 0.5rem;
+    text-align: center; font-size: 0.7rem; color: var(--text-muted); flex-shrink: 0;
 }
 
-.num-h.locked-final {
-    color: #fbbf24;
-    text-shadow: 0 0 60px #fbbf24, 0 0 110px #f59e0b;
-    transform: scale(1.08);
-    transition: all 0.2s ease;
-}
-/* PASTIKAN BARIS INI ADA DI PALING BAWAH style.css */
-.hidden {
-    display: none !important;
-}
-
-.focus-overlay {
-    position: fixed !important;
-    inset: 0 !important;
-    z-index: 9999 !important;
-    background: radial-gradient(circle at center, #09152b 0%, #02040a 100%) !important;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem !important;
-}
-
-.focus-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    max-height: 95vh;
-}
-
-.focus-content h2 {
-    font-size: 2.2rem !important;
-    margin: 0.4rem 0 0.8rem 0 !important;
-}
-
-.model-d-stage {
-    width: 280px !important;
-    height: 280px !important;
-    margin: 0.5rem auto !important;
-}
-
-.diamond-outer { width: 200px !important; height: 200px !important; }
-.diamond-inner { width: 184px !important; height: 184px !important; }
-.num-d { font-size: 10.5rem !important; }
-
-.model-h-stage {
-    width: 340px !important;
-    height: 320px !important;
-    margin: 0.25rem auto !important;
-}
-
-.num-h { font-size: 15.5rem !important; }
-/* =========================================================
-   PERBAIKAN TATA LETAK AGAR RAPI & TIDAK BERTUMPUK
-   ========================================================= */
-
-/* 1. Perbaikan Header agar Judul Tidak Terpotong */
-header > div:first-child {
-    max-width: 1280px;
-    width: 100%;
-    margin: 0 auto;
-    padding: 0.75rem 2rem !important;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1.5rem;
-}
-
-header .w-10 {
-    flex-shrink: 0;
-}
-
-/* 2. Perbaikan Spasi Status & Timer (Halaman 2 & 3) */
-.timer-wrapper .flex {
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    width: 100%;
-    gap: 1.5rem;
-    margin-bottom: 0.5rem !important;
-}
-
-/* 3. Perbaikan Baris Judul Daftar Calon & Tombol Reset (Halaman 1) */
-#page-1 .glass-panel > .flex:first-child {
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    margin-bottom: 1rem !important;
-}
-
-/* 4. Perbaikan Posisi Tombol Lanjut ke Kanan (Halaman 1) */
-#page-1 .glass-panel > .flex:last-child {
-    display: flex !important;
-    justify-content: flex-end !important;
-    margin-top: 1.25rem !important;
-}
-
-/* 5. Perbaikan Tombol Navigasi Bawah (Halaman 2 & 3) */
-#page-2 > .mt-8,
-#page-3 > .mt-8 {
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    width: 100%;
-    margin-top: 1.25rem !important;
-}
-
-#page-2 > .mt-8 > .flex {
-    display: flex !important;
-    gap: 0.75rem !important;
-    align-items: center !important;
-}
-
-/* 6. Penyesuaian Tinggi Daftar Agar Tidak Sesak */
-#attendanceList {
-    min-height: 180px;
-    max-height: 36vh !important;
-}
-
-#stage1ResultList,
-#finalResultsList {
-    max-height: 42vh !important;
-}
-/* Membuat Logo K26 dan Judul PILKADES KEBONDOWO 2026 sejajar menyamping */
-header > div:first-child > div:first-child {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    gap: 0.85rem !important;
-}
-
-header > div:first-child > div:first-child > div:last-child {
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    text-align: left !important;
-}
-
-header h1 {
-    margin: 0 !important;
-    line-height: 1.2 !important;
-}
-
-header p {
-    margin: 2px 0 0 0 !important;
-    line-height: 1.2 !important;
-}
-/* Merapikan posisi Dropdown Metode Acak & Tombol Fullscreen agar sejajar 1 baris */
-header .justify-between {
-    width: auto !important;
-}
-header > div:first-child > div:last-child {
-    display: flex !important;
-    align-items: center !important;
-    gap: 0.75rem !important;
-    flex-wrap: nowrap !important;
-}
-/* =========================================================
-   MAKSIMALKAN OVERLAY FULLSCREEN (MEPET ATAS-BAWAH & RAKSASA)
-   ========================================================= */
-.focus-overlay {
-    padding: 2.5vh 2vw !important;
-}
-
-.focus-content {
-    width: 100% !important;
-    max-width: 100% !important;
-    height: 95vh !important; /* Penuhi seluruh tinggi layar */
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between !important; /* Dorong teks atas & bawah mepet ke tepi */
-    align-items: center !important;
-}
-
-/* Grup Teks Atas (Tahap & Nama Calon) Mepet ke Atas */
-#focusStageLabel {
-    font-size: 2.4vh !important;
-    letter-spacing: 0.2em !important;
-    margin: 0 !important;
-}
-
-.focus-content h2 {
-    font-size: 5.5vh !important;
-    margin: 0.5vh 0 0 0 !important;
-}
-
-/* Wadah Tengah (Model D & Model H) Membesar Maksimal */
-.model-d-stage,
-.model-h-stage {
-    flex: 1 !important;
-    width: 100% !important;
-    height: auto !important;
-    margin: 0 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-}
-
-/* Perbesar Model D (Halaman 2) */
-.diamond-outer {
-    width: 38vh !important;
-    height: 38vh !important;
-}
-
-.diamond-inner {
-    width: 35vh !important;
-    height: 35vh !important;
-}
-
-.num-d {
-    font-size: 24vh !important;
-}
-
-/* Perbesar Model H & Gelombang Sonar (Halaman 3) */
-.ripple {
-    width: 44vh !important;
-    height: 44vh !important;
-    border-width: 5px !important;
-}
-
-.num-h {
-    font-size: 46vh !important; /* Angka super raksasa memenuhi tengah layar */
-    line-height: 0.9 !important;
-}
-
-/* Grup Timer & Progress Bar Mepet ke Bawah */
-.focus-content .timer-wrapper {
-    width: 85% !important;
-    max-width: 900px !important;
-    margin: 0 !important;
-}
-
-.focus-content .timer-wrapper .flex {
-    font-size: 2.2vh !important;
-    margin-bottom: 1vh !important;
-}
-
-.focus-content .progress-track {
-    height: 16px !important;
+@media print {
+    html, body { height: auto; overflow: visible; background: #fff !important; color: #000 !important; }
+    header, footer, .no-print, #focusOverlay { display: none !important; }
 }
