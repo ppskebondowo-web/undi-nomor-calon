@@ -62,20 +62,24 @@ function playVictoryFanfare() {
     ];
     chord.forEach(n => playTone(n.f, n.d, 'triangle', 0.11, n.t));
 }
-function startOverlayMusic() {
-    const audio = document.getElementById('bgMusicUndian');
+function startOverlayMusic(stageType) {
+    stopOverlayMusic(); // Pastikan musik sebelumnya mati
+    const audioId = stageType === 'D' ? 'bgMusicStage1' : 'bgMusicStage2';
+    const audio = document.getElementById(audioId);
     if (audio) {
-        audio.currentTime = 0; // Mulai dari detik ke-0
+        audio.currentTime = 0;
         audio.play().catch(() => {});
     }
 }
 
 function stopOverlayMusic() {
-    const audio = document.getElementById('bgMusicUndian');
-    if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-    }
+    ['bgMusicStage1', 'bgMusicStage2'].forEach(id => {
+        const audio = document.getElementById(id);
+        if (audio) {
+            audio.pause();
+            audio.currentTime = 0;
+        }
+    });
 }
 
 // =========================================
