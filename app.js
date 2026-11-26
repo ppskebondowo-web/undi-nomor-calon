@@ -143,50 +143,136 @@ function resetAllData() {
     }
 }
 // =========================================
-// HELPER OVERLAY LAYAR PENUH KONTER
+// HELPER OVERLAY (MODEL D & H) + AUTO SIMPAN GAMBAR PNG
 // =========================================
-function openFocusOverlay(stageLabel, candidateName, durationSec, isAmber = false) {
+function openFocusOverlay(stageLabel, candidateName, durationSec, stageType) {
     const overlay = document.getElementById('focusOverlay');
-    const digitBox = document.getElementById('focusDigitDisplay');
-    const ring = document.getElementById('focusScannerRing');
+    const modD = document.getElementById('modelDContainer');
+    const modH = document.getElementById('modelHContainer');
     const bar = document.getElementById('focusCountdownBar');
 
     document.getElementById('focusStageLabel').textContent = stageLabel;
     document.getElementById('focusCandidateName').textContent = candidateName;
     document.getElementById('focusStatusText').textContent = 'MENGACAK';
     document.getElementById('focusCountdownText').textContent = durationSec.toFixed(1);
+    document.getElementById('autoSaveNotice').classList.add('hidden');
 
-    digitBox.textContent = '0';
-    digitBox.classList.remove('locked-final', 'amber-mode');
+    modD.classList.add('hidden');
+    modH.classList.add('hidden');
     bar.classList.remove('amber-fill');
-    if (isAmber) {
-        digitBox.classList.add('amber-mode');
+    bar.style.width = '100%';
+
+    if (stageType === 'D') {
+        modD.classList.remove('hidden');
         bar.classList.add('amber-fill');
+        const digD = document.getElementById('digitModelD');
+        digD.textContent = '0';
+        digD.classList.remove('locked-final');
+        document.getElementById('diamondOuter').classList.add('spinning');
+    } else {
+        modH.classList.remove('hidden');
+        const digH = document.getElementById('digitModelH');
+        digH.textContent = '0';
+        digH.classList.remove('locked-final');
+        ['ripple1', 'ripple2', 'ripple3'].forEach(id => document.getElementById(id).classList.add('active-wave'));
     }
 
-    ring.classList.add('spinning');
-    bar.style.width = '100%';
     overlay.classList.remove('hidden');
 }
 
-function lockFocusOverlay(finalDigit) {
-    const digitBox = document.getElementById('focusDigitDisplay');
-    const ring = document.getElementById('focusScannerRing');
-
-    ring.classList.remove('spinning');
-    digitBox.textContent = `${finalDigit}`;
-    digitBox.classList.add('locked-final');
+function lockFocusOverlay(finalDigit, stageType) {
     document.getElementById('focusStatusText').textContent = 'TERKUNCI!';
     document.getElementById('focusCountdownText').textContent = '0.0';
     document.getElementById('focusCountdownBar').style.width = '0%';
+    document.getElementById('autoSaveNotice').classList.remove('hidden');
+
+    if (stageType === 'D') {
+        document.getElementById('diamondOuter').classList.remove('spinning');
+        const digD = document.getElementById('digitModelD');
+        digD.textContent = `${finalDigit}`;
+        digD.classList.add('locked-final');
+    } else {
+        ['ripple1', 'ripple2', 'ripple3'].forEach(id => document.getElementById(id).classList.remove('active-wave'));
+        const digH = document.getElementById('digitModelH');
+        digH.textContent = `${finalDigit}`;
+        digH.classList.add('locked-final');
+    }
 }
 
 function closeFocusOverlay() {
     document.getElementById('focusOverlay').classList.add('hidden');
 }
 
+// Generator Gambar Bukti Hasil Undian Otomatis (100% Offline via HTML5 Canvas)
+function autoDownloadResultImage(tahapJudul, namaCalon, nomorHasil, infoTambahan) {
+    try {
+        const canvas = document.createElement('canvas');
+        canvas.width = 1280;
+        canvas.height = 720;
+        const ctx = canvas.getContext('2d');
+
+        // Latar Gelap Futuristik
+        const grad = ctx.createRadialGradient(640, 360, 50, 640, 360, 750);
+        grad.addColorStop(0, '#0f2942');
+        grad.addColorStop(1, '#050814');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 1280, 720);
+
+        // Bingkai Neon
+        ctx.strokeStyle = '#22d3ee';
+        ctx.lineWidth = 6;
+        ctx.strokeRect(35, 35, 1210, 650);
+
+        // Header Pilkades
+        ctx.fillStyle = '#22d3ee';
+        ctx.font = 'bold 26px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('PANITIA PEMILIHAN KEPALA DESA KEBONDOWO TAHUN 2026', 640, 105);
+
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = 'bold 22px sans-serif';
+        ctx.fillText(tahapJudul.toUpperCase(), 640, 150);
+
+        // Nama Calon
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 48px sans-serif';
+        ctx.fillText(namaCalon, 640, 235);
+
+        // Lingkaran Angka Terpilih
+        ctx.beginPath();
+        ctx.arc(640, 415, 130, 0, Math.PI * 2);
+        ctx.fillStyle = '#020617';
+        ctx.fill();
+        ctx.lineWidth = 8;
+        ctx.strokeStyle = '#10b981';
+        ctx.stroke();
+
+        ctx.fillStyle = '#34d399';
+        ctx.font = 'bold 175px sans-serif';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`${nomorHasil}`, 640, 422);
+
+        // Footer Waktu & Keterangan
+        ctx.textBaseline = 'alphabetic';
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = 'bold 24px sans-serif';
+        ctx.fillText(infoTambahan, 640, 605);
+
+        const waktu = new Date().toLocaleString('id-ID');
+        ctx.fillStyle = '#64748b';
+        ctx.font = '18px sans-serif';
+        ctx.fillText(`Terekam Otomatis oleh Sistem Digital • ${waktu}`, 640, 650);
+
+        // Unduh File PNG Otomatis
+        const cleanName = namaCalon.replace(/[^a-zA-Z0-9]/g, '_');
+        const link = document.createElement('a');
+        link.download = `${tahapJudul.replace(/\s+/g, '')}_No-${nomorHasil}_${cleanName}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    } catch (e) {}
+}
 // =========================================
-// HALAMAN 2: UNDIAN 1 (1 DIGIT 0-9 -> HASIL 1..N + TAHAN 3 DETIK)
+// HALAMAN 2: UNDIAN 1 (MODEL D + TAHAN 3 DETIK + AUTO SAVE PNG)
 // =========================================
 let stage1AvailableTurns = [];
 let stage1DrawerIdx = 0;
@@ -200,7 +286,6 @@ function renderStage1Page() {
     for (let i = 1; i <= candidates.length; i++) {
         if (!usedTurns.includes(i)) stage1AvailableTurns.push(i);
     }
-
     stage1DrawerIdx = candidates.findIndex(c => c.drawTurnOrder === null);
     stage1Completed = (stage1DrawerIdx === -1 && candidates.length >= 2);
     updateStage1UI();
@@ -212,7 +297,6 @@ function updateStage1UI() {
     const remainingText = document.getElementById('stage1RemainingText');
     const btnToPage3 = document.getElementById('btnToPage3');
 
-    slotDisplay.classList.remove('locked-slot');
     document.getElementById('stage1CountdownText').textContent = '5.0';
     document.getElementById('stage1CountdownBar').style.width = '100%';
     document.getElementById('stage1StatusText').textContent = 'SIAP';
@@ -242,9 +326,9 @@ function updateStage1UI() {
         btnStart.textContent = 'TAHAP 1 SELESAI';
         btnToPage3.disabled = false;
     }
-
     renderStage1ResultsList();
 }
+
 function startStage1Spin() {
     if (isStage1Spinning || stage1AvailableTurns.length === 0) return;
     isStage1Spinning = true;
@@ -252,12 +336,12 @@ function startStage1Spin() {
     const activeCand = candidates[stage1DrawerIdx];
     const btnStart = document.getElementById('btnStartStage1');
     const slotDisplay = document.getElementById('stage1SlotDisplay');
-    const focusDigit = document.getElementById('focusDigitDisplay');
+    const digD = document.getElementById('digitModelD');
     const focusCountdown = document.getElementById('focusCountdownText');
     const focusBar = document.getElementById('focusCountdownBar');
 
     btnStart.disabled = true;
-    openFocusOverlay(`UNDIAN TAHAP 1 • HADIR #${activeCand.attendanceOrder}`, activeCand.name, 5.0, true);
+    openFocusOverlay(`UNDIAN TAHAP 1 • HADIR #${activeCand.attendanceOrder}`, activeCand.name, 5.0, 'D');
 
     const duration = 5000;
     const startTime = Date.now();
@@ -272,7 +356,7 @@ function startStage1Spin() {
 
     stage1SpinInterval = setInterval(() => {
         const randDigit = getRandomInt(10);
-        focusDigit.textContent = `${randDigit}`;
+        digD.textContent = `${randDigit}`;
         slotDisplay.textContent = `${randDigit}`;
         playBeep(680, 0.03, 'square');
     }, 45);
@@ -284,10 +368,12 @@ function startStage1Spin() {
         const finalIdx = getRandomInt(stage1AvailableTurns.length);
         const chosenTurn = stage1AvailableTurns[finalIdx];
 
-        lockFocusOverlay(chosenTurn);
+        lockFocusOverlay(chosenTurn, 'D');
         slotDisplay.textContent = `${chosenTurn}`;
-        slotDisplay.classList.add('locked-slot');
         playWinSound();
+
+        // Simpan Bukti Gambar Otomatis saat Berhenti
+        autoDownloadResultImage('Undian 1 Urutan Ambil', activeCand.name, chosenTurn, `Giliran Pengambilan Nomor Ke-${chosenTurn} (Hadir #${activeCand.attendanceOrder})`);
 
         candidates[stage1DrawerIdx].drawTurnOrder = chosenTurn;
         candidates[stage1DrawerIdx].officialNumber = null;
@@ -309,9 +395,9 @@ function renderStage1ResultsList() {
             <div style="${hasTurn ? 'border-color:rgba(245,158,11,0.6);' : ''}">
                 <div>
                     <span style="font-size:11px; color:#94a3b8;">Urutan Hadir #${c.attendanceOrder}</span>
-                    <p style="font-weight:bold; font-size:16px; color:${hasTurn ? '#fff' : '#94a3b8'}; margin:2px 0 0 0;">${escapeHtml(c.name)}</p>
+                    <p style="font-weight:bold; font-size:15px; color:${hasTurn ? '#fff' : '#94a3b8'}; margin:2px 0 0 0;">${escapeHtml(c.name)}</p>
                 </div>
-                <div style="background:${hasTurn ? '#f59e0b' : '#1e293b'}; color:${hasTurn ? '#020617' : '#64748b'}; width:48px; height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:22px;">
+                <div style="background:${hasTurn ? '#f59e0b' : '#1e293b'}; color:${hasTurn ? '#020617' : '#64748b'}; width:42px; height:42px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:20px;">
                     ${hasTurn ? c.drawTurnOrder : '-'}
                 </div>
             </div>
@@ -325,15 +411,12 @@ function resetStage1Only() {
     isStage1Spinning = false;
     stage1Completed = false;
     closeFocusOverlay();
-    candidates.forEach(c => {
-        c.drawTurnOrder = null;
-        c.officialNumber = null;
-    });
+    candidates.forEach(c => { c.drawTurnOrder = null; c.officialNumber = null; });
     renderStage1Page();
 }
 
 // =========================================
-// HALAMAN 3: UNDIAN 2 (1 DIGIT 0-9 -> HASIL 1..N + TAHAN 3 DETIK)
+// HALAMAN 3: UNDIAN 2 (MODEL H MAKSIMAL + TAHAN 3 DETIK + AUTO SAVE PNG)
 // =========================================
 let countdownTimer = null;
 
@@ -345,19 +428,16 @@ function initStage2Page() {
     for (let i = 1; i <= orderedCandidatesForStage2.length; i++) {
         if (!usedNumbers.includes(i)) availableNumbers.push(i);
     }
-
     currentDrawerIndex = orderedCandidatesForStage2.findIndex(c => c.officialNumber === null);
     updateStage2UI();
 }
+
 function updateStage2UI() {
     const btnStart = document.getElementById('btnStartCounter');
     const counterDisplay = document.getElementById('counterDisplay');
     const remainingText = document.getElementById('remainingNumbersText');
     const completionBox = document.getElementById('completionActions');
-    //const scannerRing = document.getElementById('scannerRing');
 
-    counterDisplay.classList.remove('locked-win');
-    //scannerRing.classList.remove('spinning');
     document.getElementById('countdownText').textContent = '15.0';
     document.getElementById('countdownBar').style.width = '100%';
     document.getElementById('counterStatusText').textContent = 'SIAP';
@@ -396,12 +476,12 @@ function startCounter() {
     const activeCand = orderedCandidatesForStage2[currentDrawerIndex];
     const btnStart = document.getElementById('btnStartCounter');
     const counterDisplay = document.getElementById('counterDisplay');
-    const focusDigit = document.getElementById('focusDigitDisplay');
+    const digH = document.getElementById('digitModelH');
     const focusCountdown = document.getElementById('focusCountdownText');
     const focusBar = document.getElementById('focusCountdownBar');
 
     btnStart.disabled = true;
-    openFocusOverlay(`UNDIAN NOMOR URUT • GILIRAN #${activeCand.drawTurnOrder}`, activeCand.name, 15.0, false);
+    openFocusOverlay(`UNDIAN NOMOR URUT • GILIRAN #${activeCand.drawTurnOrder}`, activeCand.name, 15.0, 'H');
 
     const totalDuration = 15000;
     const startTime = Date.now();
@@ -416,7 +496,7 @@ function startCounter() {
 
     counterInterval = setInterval(() => {
         const randDigit = getRandomInt(10);
-        focusDigit.textContent = `${randDigit}`;
+        digH.textContent = `${randDigit}`;
         counterDisplay.textContent = `${randDigit}`;
         playBeep(880, 0.03, 'square');
     }, 45);
@@ -428,10 +508,12 @@ function startCounter() {
         const finalIdx = getRandomInt(availableNumbers.length);
         const chosenNumber = availableNumbers[finalIdx];
 
-        lockFocusOverlay(chosenNumber);
+        lockFocusOverlay(chosenNumber, 'H');
         counterDisplay.textContent = `${chosenNumber}`;
-        counterDisplay.classList.add('locked-win');
         playWinSound();
+
+        // Simpan Bukti Gambar Resmi Nomor Urut Otomatis saat Berhenti
+        autoDownloadResultImage('Penetapan Nomor Urut', activeCand.name, chosenNumber, `NOMOR URUT RESMI: ${chosenNumber} (Giliran Undi #${activeCand.drawTurnOrder})`);
 
         activeCand.officialNumber = chosenNumber;
         availableNumbers.splice(finalIdx, 1);
@@ -452,9 +534,9 @@ function renderFinalResultsTable() {
             <div style="${hasNum ? 'border-color:rgba(16,185,129,0.6);' : ''}">
                 <div>
                     <span style="font-size:11px; color:#94a3b8;">Giliran #${c.drawTurnOrder} • Hadir #${c.attendanceOrder}</span>
-                    <p style="font-weight:bold; font-size:16px; color:${hasNum ? '#fff' : '#94a3b8'}; margin:2px 0 0 0;">${escapeHtml(c.name)}</p>
+                    <p style="font-weight:bold; font-size:15px; color:${hasNum ? '#fff' : '#94a3b8'}; margin:2px 0 0 0;">${escapeHtml(c.name)}</p>
                 </div>
-                <div style="background:${hasNum ? '#10b981' : '#1e293b'}; color:${hasNum ? '#020617' : '#64748b'}; width:48px; height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:22px;">
+                <div style="background:${hasNum ? '#10b981' : '#1e293b'}; color:${hasNum ? '#020617' : '#64748b'}; width:42px; height:42px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:20px;">
                     ${hasNum ? c.officialNumber : '-'}
                 </div>
             </div>
@@ -477,39 +559,28 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// =========================================
-// KONTROL FULL TOMBOL ENTER PC
-// =========================================
+// Kontrol Full Tombol ENTER PC
 document.addEventListener('keydown', function (e) {
     if (e.key !== 'Enter') return;
-
     const activePage = document.querySelector('.page-section.active');
     if (!activePage) return;
 
     if (activePage.id === 'page-1') {
         const input = document.getElementById('candidateNameInput');
-        if (document.activeElement === input && input.value.trim() !== '') {
-            return;
-        }
+        if (document.activeElement === input && input.value.trim() !== '') return;
         const btnToPage2 = document.getElementById('btnToPage2');
-        if (!btnToPage2.disabled) {
-            e.preventDefault();
-            goToPage(2);
-        }
+        if (!btnToPage2.disabled) { e.preventDefault(); goToPage(2); }
     } else if (activePage.id === 'page-2') {
         e.preventDefault();
         const btnStart1 = document.getElementById('btnStartStage1');
         const btnToPage3 = document.getElementById('btnToPage3');
-        if (!btnStart1.disabled && !isStage1Spinning) {
-            startStage1Spin();
-        } else if (stage1Completed && !btnToPage3.disabled && !isStage1Spinning) {
-            goToPage(3);
-        }
+        if (!btnStart1.disabled && !isStage1Spinning) startStage1Spin();
+        else if (stage1Completed && !btnToPage3.disabled && !isStage1Spinning) goToPage(3);
     } else if (activePage.id === 'page-3') {
         e.preventDefault();
         const btnStart2 = document.getElementById('btnStartCounter');
-        if (!btnStart2.disabled && !isSpinning) {
-            startCounter();
-        }
+        if (!btnStart2.disabled && !isSpinning) startCounter();
     }
 });
+
+
