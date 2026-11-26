@@ -48,21 +48,12 @@ function getRandomInt(max) {
         let randomValue;
         do {
             window.crypto.getRandomValues(array);
-            randomValue = array[0];
+            randomValue = array;
         } while (randomValue >= limit);
         return randomValue % max;
     } else {
         return Math.floor(Math.random() * max);
     }
-}
-
-function shuffleArray(array) {
-    const arr = [...array];
-    for (let i = arr.length - 1; i > 0; i--) {
-        const j = getRandomInt(i + 1);
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr;
 }
 
 function goToPage(pageNum) {
@@ -151,79 +142,155 @@ function resetAllData() {
         renderAttendanceList();
     }
 }
-// Halaman 2: Undian 1 (Urutan Pengambilan)
+// Halaman 2: Undian 1 (Slot Reel 5 Detik - Berhenti Tiba-Tiba)
+let stage1AvailableTurns = [];
+let stage1DrawerIdx = 0;
+let stage1SpinInterval = null;
+let stage1CountdownTimer = null;
+let isStage1Spinning = false;
+
 function renderStage1Page() {
-    const inputList = document.getElementById('stage1InputList');
-    inputList.innerHTML = candidates.map(c => `
-        <div>
-            <span style="color:#94a3b8; font-size:12px;">Hadir #${c.attendanceOrder}</span>
-            <span style="font-weight:bold; color:#fff;">${escapeHtml(c.name)}</span>
-        </div>
-    `).join('');
-
-    if (stage1Completed) {
-        renderStage1Results();
-    } else {
-        document.getElementById('stage1ResultList').innerHTML = `<div style="text-align:center; padding:2rem; color:#64748b;">Klik tombol "ACAK URUTAN" untuk menentukan giliran.</div>`;
-        document.getElementById('btnToPage3').disabled = true;
+    const usedTurns = candidates.filter(c => c.drawTurnOrder !== null).map(c => c.drawTurnOrder);
+    stage1AvailableTurns = [];
+    for (let i = 1; i <= candidates.length; i++) {
+        if (!usedTurns.includes(i)) stage1AvailableTurns.push(i);
     }
+
+    stage1DrawerIdx = candidates.findIndex(c => c.drawTurnOrder === null);
+    stage1Completed = (stage1DrawerIdx === -1 && candidates.length >= 2);
+    updateStage1UI();
 }
 
-function runStage1Draw() {
-    const btn = document.getElementById('btnShuffleStage1');
-    const resultBox = document.getElementById('stage1ResultList');
-    const algoVersion = document.getElementById('rngVersion').value;
-    
-    btn.disabled = true;
-    let ticks = 0;
+function updateStage1UI() {
+    const btnStart = document.getElementById('btnStartStage1');
+    const slotDisplay = document.getElementById('stage1SlotDisplay');
+    const remainingText = document.getElementById('stage1RemainingText');
+    const btnToPage3 = document.getElementById('btnToPage3');
 
-    const anim = setInterval(() => {
-        ticks++;
-        playBeep(400 + ticks * 25, 0.04);
-        const tempShuffled = shuffleArray(candidates);
-        resultBox.innerHTML = tempShuffled.map(c => `
-            <div style="opacity:0.7;">
-                <span style="color:#fbbf24; font-weight:bold;">?</span>
-                <span style="color:#cbd5e1;">${escapeHtml(c.name)}</span>
-            </div>
-        `).join('');
+    slotDisplay.classList.remove('locked-slot');
+    document.getElementById('stage1CountdownText').textContent = '5.0';
+    document.getElementById('stage1CountdownBar').style.width = '100%';
+    document.getElementById('stage1StatusText').textContent = 'SIAP';
 
-        if (ticks >= 18) {
-            clearInterval(anim);
-            const finalOrder = shuffleArray(candidates);
-            finalOrder.forEach((item, index) => {
-                const target = candidates.find(c => c.id === item.id);
-                target.drawTurnOrder = index + 1;
-                target.officialNumber = null;
-            });
+    remainingText.textContent = stage1AvailableTurns.length > 0
+        ? `Urutan giliran tersedia: [ ${stage1AvailableTurns.map(n => formatTwoDigit(n)).join(', ')} ]`
+        : 'Semua calon telah mendapatkan urutan giliran';
 
-            stage1Completed = true;
-            btn.disabled = false;
-            document.getElementById('stage1AlgoBadge').textContent = algoVersion === 'crypto' ? 'Metode: Crypto CSPRNG' : 'Metode: Standard PRNG';
-            playWinSound();
-            renderStage1Results();
-            document.getElementById('btnToPage3').disabled = false;
+    if (stage1DrawerIdx !== -1 && stage1DrawerIdx < candidates.length) {
+        const activeCand = candidates[stage1DrawerIdx];
+        document.getElementById('stage1ActiveOrder').textContent = `HADIR #${activeCand.attendanceOrder}`;
+        document.getElementById('stage1ActiveName').textContent = activeCand.name;
+
+        if (!isStage1Spinning) {
+            slotDisplay.textContent = '00';
+            btnStart.disabled = false;
+            btnStart.innerHTML = `PUTAR URUTAN AMBIL <span class="key-badge">ENTER ↵</span>`;
         }
-    }, 70);
+        btnToPage3.disabled = true;
+    } else {
+        stage1Completed = true;
+        document.getElementById('stage1ActiveOrder').textContent = 'UNDIAN TAHAP 1 SELESAI';
+        document.getElementById('stage1ActiveName').textContent = 'Semua Calon Siap ke Tahap 2';
+        slotDisplay.textContent = 'OK';
+        document.getElementById('stage1StatusText').textContent = 'SELESAI';
+        btnStart.disabled = true;
+        btnStart.textContent = 'TAHAP 1 SELESAI';
+        btnToPage3.disabled = false;
+    }
+
+    renderStage1ResultsList();
 }
 
-function renderStage1Results() {
-    const sorted = [...candidates].sort((a, b) => a.drawTurnOrder - b.drawTurnOrder);
-    document.getElementById('stage1ResultList').innerHTML = sorted.map(c => `
-        <div style="border-color:rgba(245,158,11,0.5);">
-            <div style="display:flex; align-items:center; gap:12px;">
-                <span style="background:#f59e0b; color:#020617; padding:4px 10px; border-radius:6px; font-weight:900;">${c.drawTurnOrder}</span>
+function startStage1Spin() {
+    if (isStage1Spinning || stage1AvailableTurns.length === 0) return;
+    isStage1Spinning = true;
+
+    const btnStart = document.getElementById('btnStartStage1');
+    const slotDisplay = document.getElementById('stage1SlotDisplay');
+    const statusText = document.getElementById('stage1StatusText');
+    const countdownText = document.getElementById('stage1CountdownText');
+    const countdownBar = document.getElementById('stage1CountdownBar');
+
+    btnStart.disabled = true;
+    btnStart.textContent = 'SEDANG MENGACAK (5 DETIK)...';
+    statusText.textContent = 'BERPUTAR';
+
+    const duration = 5000;
+    const startTime = Date.now();
+
+    stage1CountdownTimer = setInterval(() => {
+        const elapsed = Date.now() - startTime;
+        const remaining = Math.max(0, duration - elapsed);
+        countdownText.textContent = (remaining / 1000).toFixed(1);
+        countdownBar.style.width = `${(remaining / duration) * 100}%`;
+        if (remaining <= 0) clearInterval(stage1CountdownTimer);
+    }, 80);
+
+    stage1SpinInterval = setInterval(() => {
+        const randIdx = getRandomInt(stage1AvailableTurns.length);
+        slotDisplay.textContent = formatTwoDigit(stage1AvailableTurns[randIdx]);
+        playBeep(680, 0.03, 'square');
+    }, 45);
+
+    setTimeout(() => {
+        clearInterval(stage1SpinInterval);
+        clearInterval(stage1CountdownTimer);
+        isStage1Spinning = false;
+
+        const finalIdx = getRandomInt(stage1AvailableTurns.length);
+        const chosenTurn = stage1AvailableTurns[finalIdx];
+
+        slotDisplay.textContent = formatTwoDigit(chosenTurn);
+        slotDisplay.classList.add('locked-slot');
+        statusText.textContent = 'TERKUNCI';
+        countdownText.textContent = '0.0';
+        countdownBar.style.width = '0%';
+        playWinSound();
+
+        candidates[stage1DrawerIdx].drawTurnOrder = chosenTurn;
+        candidates[stage1DrawerIdx].officialNumber = null;
+        stage1AvailableTurns.splice(finalIdx, 1);
+
+        renderStage1ResultsList();
+
+        setTimeout(() => {
+            stage1DrawerIdx = candidates.findIndex(c => c.drawTurnOrder === null);
+            updateStage1UI();
+        }, 1800);
+    }, duration);
+}
+
+function renderStage1ResultsList() {
+    document.getElementById('stage1ResultList').innerHTML = candidates.map(c => {
+        const hasTurn = c.drawTurnOrder !== null;
+        return `
+            <div style="${hasTurn ? 'border-color:rgba(245,158,11,0.6);' : ''}">
                 <div>
-                    <p style="font-weight:bold; color:#fff; margin:0;">${escapeHtml(c.name)}</p>
-                    <p style="font-size:11px; color:#fbbf24; margin:0;">Giliran Mengundi Ke-${c.drawTurnOrder} (Hadir #${c.attendanceOrder})</p>
+                    <span style="font-size:11px; color:#94a3b8;">Urutan Hadir #${c.attendanceOrder}</span>
+                    <p style="font-weight:bold; font-size:16px; color:${hasTurn ? '#fff' : '#94a3b8'}; margin:2px 0 0 0;">${escapeHtml(c.name)}</p>
+                </div>
+                <div style="background:${hasTurn ? '#f59e0b' : '#1e293b'}; color:${hasTurn ? '#020617' : '#64748b'}; width:48px; height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:20px;">
+                    ${hasTurn ? formatTwoDigit(c.drawTurnOrder) : '--'}
                 </div>
             </div>
-        </div>
-    `).join('');
-    document.getElementById('btnToPage3').disabled = false;
+        `;
+    }).join('');
 }
 
-// Halaman 3: Undian 2 (Konter Nomor Urut)
+function resetStage1Only() {
+    clearInterval(stage1SpinInterval);
+    clearInterval(stage1CountdownTimer);
+    isStage1Spinning = false;
+    stage1Completed = false;
+    candidates.forEach(c => {
+        c.drawTurnOrder = null;
+        c.officialNumber = null;
+    });
+    renderStage1Page();
+}
+// Halaman 3: Undian 2 (Konter Radar 15 Detik - Berhenti Tiba-Tiba)
+let countdownTimer = null;
+
 function initStage2Page() {
     orderedCandidatesForStage2 = [...candidates].sort((a, b) => a.drawTurnOrder - b.drawTurnOrder);
     const usedNumbers = orderedCandidatesForStage2.filter(c => c.officialNumber !== null).map(c => c.officialNumber);
@@ -239,10 +306,16 @@ function initStage2Page() {
 
 function updateStage2UI() {
     const btnStart = document.getElementById('btnStartCounter');
-    const btnStop = document.getElementById('btnStopCounter');
     const counterDisplay = document.getElementById('counterDisplay');
     const remainingText = document.getElementById('remainingNumbersText');
     const completionBox = document.getElementById('completionActions');
+    const scannerRing = document.getElementById('scannerRing');
+
+    counterDisplay.classList.remove('locked-win');
+    scannerRing.classList.remove('spinning');
+    document.getElementById('countdownText').textContent = '15.0';
+    document.getElementById('countdownBar').style.width = '100%';
+    document.getElementById('counterStatusText').textContent = 'SIAP';
 
     remainingText.textContent = availableNumbers.length > 0 
         ? `Nomor tersedia: [ ${availableNumbers.map(n => formatTwoDigit(n)).join(', ')} ]`
@@ -256,15 +329,16 @@ function updateStage2UI() {
         if (!isSpinning) {
             counterDisplay.textContent = '00';
             btnStart.disabled = false;
-            btnStop.disabled = true;
+            btnStart.innerHTML = `MULAI PUTAR KONTER <span class="key-badge">ENTER ↵</span>`;
         }
         completionBox.classList.add('hidden');
     } else {
         document.getElementById('activeDrawerOrder').textContent = 'PENGUNDIAN SELESAI';
         document.getElementById('activeDrawerName').textContent = 'Semua Calon Telah Mendapat Nomor';
         counterDisplay.textContent = 'OK';
+        document.getElementById('counterStatusText').textContent = 'SELESAI';
         btnStart.disabled = true;
-        btnStop.disabled = true;
+        btnStart.textContent = 'UNDIAN SELESAI';
         completionBox.classList.remove('hidden');
     }
     renderFinalResultsTable();
@@ -273,37 +347,63 @@ function updateStage2UI() {
 function startCounter() {
     if (isSpinning || availableNumbers.length === 0) return;
     isSpinning = true;
-    document.getElementById('btnStartCounter').disabled = true;
-    document.getElementById('btnStopCounter').disabled = false;
+
+    const btnStart = document.getElementById('btnStartCounter');
     const counterDisplay = document.getElementById('counterDisplay');
+    const scannerRing = document.getElementById('scannerRing');
+    const statusText = document.getElementById('counterStatusText');
+    const countdownText = document.getElementById('countdownText');
+    const countdownBar = document.getElementById('countdownBar');
+
+    btnStart.disabled = true;
+    btnStart.textContent = 'SEDANG MENGACAK (15 DETIK)...';
+    scannerRing.classList.add('spinning');
+    statusText.textContent = 'BERPUTAR';
+
+    const totalDuration = 15000;
+    const startTime = Date.now();
+
+    countdownTimer = setInterval(() => {
+        const elapsed = Date.now() - startTime;
+        const remaining = Math.max(0, totalDuration - elapsed);
+        countdownText.textContent = (remaining / 1000).toFixed(1);
+        countdownBar.style.width = `${(remaining / totalDuration) * 100}%`;
+        if (remaining <= 0) clearInterval(countdownTimer);
+    }, 80);
 
     counterInterval = setInterval(() => {
         const randIdx = getRandomInt(availableNumbers.length);
         currentDisplayedNum = availableNumbers[randIdx];
         counterDisplay.textContent = formatTwoDigit(currentDisplayedNum);
-        playBeep(850, 0.03, 'square');
-    }, 55);
-}
-
-function stopCounter() {
-    if (!isSpinning) return;
-    clearInterval(counterInterval);
-    isSpinning = false;
-
-    const finalIdx = getRandomInt(availableNumbers.length);
-    const chosenNumber = availableNumbers[finalIdx];
-
-    document.getElementById('counterDisplay').textContent = formatTwoDigit(chosenNumber);
-    playWinSound();
-
-    const activeCand = orderedCandidatesForStage2[currentDrawerIndex];
-    activeCand.officialNumber = chosenNumber;
-    availableNumbers.splice(finalIdx, 1);
+        playBeep(880, 0.03, 'square');
+    }, 45);
 
     setTimeout(() => {
-        currentDrawerIndex = orderedCandidatesForStage2.findIndex(c => c.officialNumber === null);
-        updateStage2UI();
-    }, 900);
+        clearInterval(counterInterval);
+        clearInterval(countdownTimer);
+        isSpinning = false;
+
+        const finalIdx = getRandomInt(availableNumbers.length);
+        const chosenNumber = availableNumbers[finalIdx];
+
+        scannerRing.classList.remove('spinning');
+        counterDisplay.textContent = formatTwoDigit(chosenNumber);
+        counterDisplay.classList.add('locked-win');
+        statusText.textContent = 'TERKUNCI';
+        countdownText.textContent = '0.0';
+        countdownBar.style.width = '0%';
+        playWinSound();
+
+        const activeCand = orderedCandidatesForStage2[currentDrawerIndex];
+        activeCand.officialNumber = chosenNumber;
+        availableNumbers.splice(finalIdx, 1);
+        renderFinalResultsTable();
+
+        setTimeout(() => {
+            currentDrawerIndex = orderedCandidatesForStage2.findIndex(c => c.officialNumber === null);
+            updateStage2UI();
+        }, 2200);
+    }, totalDuration);
 }
 
 function renderFinalResultsTable() {
@@ -324,7 +424,8 @@ function renderFinalResultsTable() {
 }
 
 function resetStage2Only() {
-    if (isSpinning) clearInterval(counterInterval);
+    clearInterval(counterInterval);
+    clearInterval(countdownTimer);
     isSpinning = false;
     candidates.forEach(c => c.officialNumber = null);
     initStage2Page();
@@ -339,3 +440,38 @@ function escapeHtml(text) {
     div.textContent = text;
     return div.innerHTML;
 }
+
+// Kontrol Full Tombol ENTER PC
+document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter') return;
+
+    const activePage = document.querySelector('.page-section.active');
+    if (!activePage) return;
+
+    if (activePage.id === 'page-1') {
+        const input = document.getElementById('candidateNameInput');
+        if (document.activeElement === input && input.value.trim() !== '') {
+            return;
+        }
+        const btnToPage2 = document.getElementById('btnToPage2');
+        if (!btnToPage2.disabled) {
+            e.preventDefault();
+            goToPage(2);
+        }
+    } else if (activePage.id === 'page-2') {
+        e.preventDefault();
+        const btnStart1 = document.getElementById('btnStartStage1');
+        const btnToPage3 = document.getElementById('btnToPage3');
+        if (!btnStart1.disabled && !isStage1Spinning) {
+            startStage1Spin();
+        } else if (stage1Completed && !btnToPage3.disabled) {
+            goToPage(3);
+        }
+    } else if (activePage.id === 'page-3') {
+        e.preventDefault();
+        const btnStart2 = document.getElementById('btnStartCounter');
+        if (!btnStart2.disabled && !isSpinning) {
+            startCounter();
+        }
+    }
+});
