@@ -373,3 +373,70 @@ footer {
     color: #020617 !important;
     box-shadow: 0 0 20px rgba(245, 158, 11, 0.4) !important;
 }
+/* =========================================
+   MODE LAYAR PENUH KONTER RAKSASA (OVERLAY)
+   ========================================= */
+.focus-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: radial-gradient(circle at center, #091326 0%, #02040a 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    animation: fadeIn 0.25s ease-out forwards;
+}
+
+.focus-content {
+    max-width: 700px;
+    width: 100%;
+}
+
+.focus-content h2 {
+    font-size: 2.5rem;
+    color: #ffffff;
+    text-shadow: 0 0 20px rgba(34, 211, 238, 0.7);
+}
+
+.focus-counter-ring {
+    position: relative;
+    width: 340px;
+    height: 340px;
+    margin: 1.5rem auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#focusDigitDisplay {
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #0f172a 0%, #020617 100%);
+    border: 4px solid #22d3ee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11rem;
+    font-weight: 900;
+    color: #22d3ee;
+    text-shadow: 0 0 40px rgba(34, 211, 238, 0.9);
+    box-shadow: 0 0 60px rgba(34, 211, 238, 0.25);
+    z-index: 2;
+    transition: all 0.2s ease;
+}
+
+#focusDigitDisplay.amber-mode {
+    border-color: #f59e0b;
+    color: #fbbf24;
+    text-shadow: 0 0 40px rgba(251, 191, 36, 0.9);
+}
+
+#focusDigitDisplay.locked-final {
+    border-color: #10b981;
+    color: #34d399;
+    text-shadow: 0 0 55px rgba(52, 211, 153, 1);
+    box-shadow: 0 0 85px rgba(16, 185, 129, 0.65);
+    transform: scale(1.08);
+}
