@@ -233,21 +233,35 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .num-d { position: relative; z-index: 2; font-size: 24vh; font-weight: 900; color: var(--accent-amber); line-height: 1; }
 .num-d.locked-final { color: var(--accent-emerald); transform: scale(1.1); transition: 0.2s; }
 
-/* MODEL H MAKSIMAL (HALAMAN 3) */
+/* MODEL H EKSTRA MAKSIMAL (HALAMAN 3) */
 .ripple {
-    position: absolute; width: 44vh; height: 44vh; border-radius: 50%;
-    border: 5px solid var(--accent-emerald); opacity: 0;
+    position: absolute;
+    width: 54vh;
+    height: 54vh;
+    border-radius: 50%;
+    border: 6px solid var(--accent-emerald);
+    opacity: 0;
 }
 .ripple.active-wave { animation: rippleWave 1.4s ease-out infinite; }
 .ripple:nth-child(2).active-wave { animation-delay: 0.45s; border-color: var(--accent-cyan); }
 .ripple:nth-child(3).active-wave { animation-delay: 0.9s; }
-@keyframes rippleWave { 0% { transform: scale(0.75); opacity: 0.95; } 100% { transform: scale(1.85); opacity: 0; } }
+@keyframes rippleWave { 0% { transform: scale(0.75); opacity: 0.95; } 100% { transform: scale(1.75); opacity: 0; } }
 
 .num-h {
-    position: relative; z-index: 2; font-size: 46vh; font-weight: 900;
-    color: var(--text-bright); text-shadow: 0 0 45px var(--accent-emerald); line-height: 0.9;
+    position: relative;
+    z-index: 2;
+    font-size: 62vh; /* Angka raksasa memenuhi layar */
+    font-weight: 900;
+    color: var(--text-bright);
+    text-shadow: 0 0 50px var(--accent-emerald);
+    line-height: 0.85;
 }
-.num-h.locked-final { color: var(--accent-amber); text-shadow: 0 0 65px var(--accent-amber); transform: scale(1.08); transition: 0.2s; }
+.num-h.locked-final {
+    color: var(--accent-amber);
+    text-shadow: 0 0 75px var(--accent-amber);
+    transform: scale(1.06);
+    transition: 0.2s;
+}
 
 .focus-bottom { width: 85%; max-width: 920px; text-align: center; }
 .focus-timer-row { font-size: 2.2vh; margin-bottom: 1vh; }
