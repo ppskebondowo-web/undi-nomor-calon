@@ -354,10 +354,10 @@ function updateStage2UI() {
     const counterDisplay = document.getElementById('counterDisplay');
     const remainingText = document.getElementById('remainingNumbersText');
     const completionBox = document.getElementById('completionActions');
-    const scannerRing = document.getElementById('scannerRing');
+    //const scannerRing = document.getElementById('scannerRing');
 
     counterDisplay.classList.remove('locked-win');
-    scannerRing.classList.remove('spinning');
+    //scannerRing.classList.remove('spinning');
     document.getElementById('countdownText').textContent = '15.0';
     document.getElementById('countdownBar').style.width = '100%';
     document.getElementById('counterStatusText').textContent = 'SIAP';
