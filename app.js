@@ -7,23 +7,18 @@ let counterInterval = null;
 let countdownTimer = null;
 let isSpinning = false;
 let audioCtx = null;
-let musicBeatStep = 0;
 
 // =========================================
-// MUSIK ELEKTRONIK BARU & FANFARE KEMENANGAN
+// MUSIK MP3 LOKAL & FANFARE KEMENANGAN
 // =========================================
-function initAudio() {
-    if (!audioCtx) {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        if (AudioContext) audioCtx = new AudioContext();
-    }
-    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-}
-
 function playTone(freq, duration, type = 'triangle', vol = 0.09, delay = 0) {
     try {
-        initAudio();
+        if (!audioCtx) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (AudioContext) audioCtx = new AudioContext();
+        }
         if (!audioCtx) return;
+        if (audioCtx.state === 'suspended') audioCtx.resume();
         const start = audioCtx.currentTime + delay;
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
@@ -38,32 +33,20 @@ function playTone(freq, duration, type = 'triangle', vol = 0.09, delay = 0) {
     } catch (e) {}
 }
 
-// Musik ketegangan dinamis (arpeggio bass & synth) saat angka berputar
-function playTensionMusicTick() {
-    const bassNotes = [110, 110, 130.81, 146.83, 110, 110, 164.81, 146.83]; // A2 - C3 - D3 - E3
-    const leadNotes = [440, 523.25, 659.25, 587.33, 440, 659.25, 783.99, 659.25];
-    const idx = musicBeatStep % bassNotes.length;
-    playTone(bassNotes[idx], 0.11, 'sawtooth', 0.05);
-    if (musicBeatStep % 2 === 0) {
-        playTone(leadNotes[idx], 0.08, 'triangle', 0.06);
-    }
-    musicBeatStep++;
-}
-
-// Musik fanfare megah saat nomor terkunci
 function playVictoryFanfare() {
     const chord = [
-        { f: 523.25, d: 0.14, t: 0.00 }, // C5
-        { f: 659.25, d: 0.14, t: 0.12 }, // E5
-        { f: 783.99, d: 0.14, t: 0.24 }, // G5
-        { f: 1046.50, d: 0.55, t: 0.36 }, // C6
-        { f: 523.25, d: 0.55, t: 0.36 }, // Harmony C5
-        { f: 783.99, d: 0.55, t: 0.36 }  // Harmony G5
+        { f: 523.25, d: 0.14, t: 0.00 },
+        { f: 659.25, d: 0.14, t: 0.12 },
+        { f: 783.99, d: 0.14, t: 0.24 },
+        { f: 1046.50, d: 0.55, t: 0.36 },
+        { f: 523.25, d: 0.55, t: 0.36 },
+        { f: 783.99, d: 0.55, t: 0.36 }
     ];
     chord.forEach(n => playTone(n.f, n.d, 'triangle', 0.11, n.t));
 }
+
 function startOverlayMusic(stageType) {
-    stopOverlayMusic(); // Pastikan musik sebelumnya mati
+    stopOverlayMusic();
     const audioId = stageType === 'D' ? 'bgMusicStage1' : 'bgMusicStage2';
     const audio = document.getElementById(audioId);
     if (audio) {
@@ -83,7 +66,7 @@ function stopOverlayMusic() {
 }
 
 // =========================================
-// TEMA TERANG / GELAP & FULLSCREEN AMAN
+// TEMA TERANG / GELAP & 2 VERSI ACAK
 // =========================================
 function toggleTheme() {
     document.body.classList.toggle('light-theme');
@@ -91,14 +74,6 @@ function toggleTheme() {
     document.getElementById('btnThemeToggle').textContent = isLight ? '🌙 Tema Gelap' : '☀️ Tema Terang';
 }
 
-document.addEventListener('fullscreenchange', () => {
-    const btn = document.getElementById('btnFullscreen');
-    if (btn) btn.textContent = document.fullscreenElement ? '⛶ Keluar Fullscreen' : '⛶ Layar Penuh';
-});
-
-// =========================================
-// 2 VERSI ALGORITMA PENGACAKAN ANGKA
-// =========================================
 function getRandomInt(max) {
     const version = document.getElementById('rngVersion').value;
     if (version === 'crypto' && window.crypto && window.crypto.getRandomValues) {
@@ -192,7 +167,7 @@ function resetAllData() {
 }
 
 // =========================================
-// OVERLAY LAYAR PENUH (TERPISAH MODEL D & H)
+// OVERLAY LAYAR PENUH (MODEL D & MODEL H)
 // =========================================
 function openFocusOverlay(stageLabel, candidateName, durationSec, stageType) {
     const overlay = document.getElementById('focusOverlay');
@@ -224,7 +199,8 @@ function openFocusOverlay(stageLabel, candidateName, durationSec, stageType) {
         digH.classList.remove('locked-final');
         ['ripple1', 'ripple2', 'ripple3'].forEach(id => document.getElementById(id).classList.add('active-wave'));
     }
-    startOverlayMusic();
+
+    startOverlayMusic(stageType);
     overlay.classList.remove('hidden');
 }
 
@@ -253,10 +229,8 @@ function closeFocusOverlay() {
     document.getElementById('modelHContainer').classList.add('hidden');
     document.getElementById('focusOverlay').classList.add('hidden');
 }
-
-
 // =========================================
-// HALAMAN 2: UNDIAN 1 (MODEL D)
+// HALAMAN 2: UNDIAN 1 (MODEL D - 5 DETIK)
 // =========================================
 let stage1AvailableTurns = [];
 let stage1DrawerIdx = 0;
@@ -319,15 +293,13 @@ function updateStage1UI() {
 function startStage1Spin() {
     if (isStage1Spinning || stage1AvailableTurns.length === 0) return;
     isStage1Spinning = true;
-    musicBeatStep = 0;
 
     const activeCand = candidates[stage1DrawerIdx];
     document.getElementById('btnStartStage1').disabled = true;
     openFocusOverlay(`UNDIAN TAHAP 1 • HADIR #${activeCand.attendanceOrder}`, activeCand.name, 5.0, 'D');
 
-    const duration = 5000;
+    const duration = 5000; // Ubah durasi Undian 1 di sini (dalam milidetik)
     const startTime = Date.now();
-    let musicTick = 0;
 
     countdownTimer = setInterval(() => {
         const remaining = Math.max(0, duration - (Date.now() - startTime));
@@ -339,7 +311,7 @@ function startStage1Spin() {
     counterInterval = setInterval(() => {
         const randDigit = getRandomInt(10);
         document.getElementById('digitModelD').textContent = `${randDigit}`;
-        document.getElementById('stage1SlotDisplay').textContent = `${randDigit}`;        
+        document.getElementById('stage1SlotDisplay').textContent = `${randDigit}`;
     }, 45);
 
     setTimeout(() => {
@@ -352,7 +324,7 @@ function startStage1Spin() {
         lockFocusOverlay(chosenTurn, 'D');
         document.getElementById('stage1SlotDisplay').textContent = `${chosenTurn}`;
         playVictoryFanfare();
-        
+
         candidates[stage1DrawerIdx].drawTurnOrder = chosenTurn;
         candidates[stage1DrawerIdx].officialNumber = null;
         stage1AvailableTurns.splice(finalIdx, 1);
@@ -373,8 +345,9 @@ function resetStage1Only() {
     candidates.forEach(c => { c.drawTurnOrder = null; c.officialNumber = null; });
     renderStage1Page();
 }
+
 // =========================================
-// HALAMAN 3: UNDIAN 2 (MODEL H)
+// HALAMAN 3: UNDIAN 2 (MODEL H - 15 DETIK)
 // =========================================
 function initStage2Page() {
     orderedCandidatesForStage2 = [...candidates].sort((a, b) => a.drawTurnOrder - b.drawTurnOrder);
@@ -432,15 +405,13 @@ function updateStage2UI() {
 function startCounter() {
     if (isSpinning || availableNumbers.length === 0) return;
     isSpinning = true;
-    musicBeatStep = 0;
 
     const activeCand = orderedCandidatesForStage2[currentDrawerIndex];
     document.getElementById('btnStartCounter').disabled = true;
     openFocusOverlay(`UNDIAN NOMOR URUT • GILIRAN #${activeCand.drawTurnOrder}`, activeCand.name, 15.0, 'H');
 
-    const totalDuration = 16000;
+    const totalDuration = 15000; // Ubah durasi Undian 2 di sini (dalam milidetik)
     const startTime = Date.now();
-    let musicTick = 0;
 
     countdownTimer = setInterval(() => {
         const remaining = Math.max(0, totalDuration - (Date.now() - startTime));
@@ -465,7 +436,7 @@ function startCounter() {
         lockFocusOverlay(chosenNumber, 'H');
         document.getElementById('counterDisplay').textContent = `${chosenNumber}`;
         playVictoryFanfare();
-        
+
         activeCand.officialNumber = chosenNumber;
         availableNumbers.splice(finalIdx, 1);
 
@@ -474,12 +445,13 @@ function startCounter() {
             closeFocusOverlay();
             currentDrawerIndex = orderedCandidatesForStage2.findIndex(c => c.officialNumber === null);
             updateStage2UI();
-        }, 4000);
+        }, 3000);
     }, totalDuration);
 }
 
 function resetStage2Only() {
-    clearInterval(counterInterval); clearInterval(countdownTimer);
+    clearInterval(counterInterval);
+    clearInterval(countdownTimer);
     isSpinning = false;
     closeFocusOverlay();
     candidates.forEach(c => c.officialNumber = null);
@@ -492,12 +464,10 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// KONTROL TOMBOL ENTER (TIDAK MENGGANGGU FULLSCREEN)
+// KONTROL TOMBOL ENTER PC
 document.addEventListener('keydown', function (e) {
     if (e.key !== 'Enter') return;
-    if (document.activeElement && (document.activeElement.id === 'btnFullscreen' || document.activeElement.id === 'btnThemeToggle')) {
-        return;
-    }
+    if (document.activeElement && document.activeElement.id === 'btnThemeToggle') return;
 
     const activePage = document.querySelector('.page-section.active');
     if (!activePage) return;
@@ -506,16 +476,24 @@ document.addEventListener('keydown', function (e) {
         const input = document.getElementById('candidateNameInput');
         if (document.activeElement === input && input.value.trim() !== '') return;
         const btnToPage2 = document.getElementById('btnToPage2');
-        if (!btnToPage2.disabled) { e.preventDefault(); goToPage(2); }
+        if (!btnToPage2.disabled) {
+            e.preventDefault();
+            goToPage(2);
+        }
     } else if (activePage.id === 'page-2') {
         e.preventDefault();
         const btnStart1 = document.getElementById('btnStartStage1');
         const btnToPage3 = document.getElementById('btnToPage3');
-        if (!btnStart1.disabled && !isStage1Spinning) startStage1Spin();
-        else if (stage1Completed && !btnToPage3.disabled && !isStage1Spinning) goToPage(3);
+        if (!btnStart1.disabled && !isStage1Spinning) {
+            startStage1Spin();
+        } else if (stage1Completed && !btnToPage3.disabled && !isStage1Spinning) {
+            goToPage(3);
+        }
     } else if (activePage.id === 'page-3') {
         e.preventDefault();
         const btnStart2 = document.getElementById('btnStartCounter');
-        if (!btnStart2.disabled && !isSpinning) startCounter();
+        if (!btnStart2.disabled && !isSpinning) {
+            startCounter();
+        }
     }
 });
