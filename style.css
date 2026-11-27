@@ -1,4 +1,3 @@
-/* VARIABEL TEMA GELAP (DEFAULT) & TEMA TERANG */
 :root {
     --bg-main: #050814;
     --bg-header: rgba(2, 6, 23, 0.94);
@@ -129,7 +128,6 @@ main {
 .row-end { display: flex; justify-content: flex-end; width: 100%; }
 .row-gap { display: flex; align-items: center; gap: 0.65rem; }
 
-/* INPUT & TOMBOL */
 input[type="text"] {
     width: 100%; background: var(--bg-item); border: 1px solid var(--border-subtle);
     color: var(--text-bright); padding: 0.7rem 0.9rem; border-radius: 8px;
@@ -153,7 +151,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
     background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.3);
     padding: 0.12rem 0.4rem; border-radius: 4px; font-size: 0.68rem; margin-left: 0.35rem;
 }
-/* DAFTAR CALON & MEDIA KONTER HALAMAN 2 & 3 */
+/* DAFTAR CALON & MEDIA KONTER */
 .scroll-list { max-height: 41vh; overflow-y: auto; padding-right: 4px; }
 .scroll-list > div {
     display: flex; justify-content: space-between; align-items: center;
@@ -196,19 +194,19 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .focus-overlay {
     position: fixed; inset: 0; z-index: 9999;
     background: var(--overlay-bg);
-    padding: 2.5vh 3vw;
+    padding: 1.8vh 3vw;
     display: flex; align-items: center; justify-content: center;
 }
 
 .focus-content {
-    width: 100%; height: 94vh;
+    width: 100%; height: 95vh;
     display: flex; flex-direction: column;
     justify-content: space-between; align-items: center;
 }
 
 .focus-top { text-align: center; }
 #focusStageLabel { font-size: 2.3vh; letter-spacing: 0.18em; display: block; }
-.focus-top h2 { font-size: 5.5vh; color: var(--text-bright); margin-top: 0.5vh; }
+.focus-top h2 { font-size: 5.5vh; color: var(--text-bright); margin-top: 0.4vh; }
 
 .model-stage {
     flex: 1; width: 100%;
@@ -233,14 +231,10 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .num-d { position: relative; z-index: 2; font-size: 24vh; font-weight: 900; color: var(--accent-amber); line-height: 1; }
 .num-d.locked-final { color: var(--accent-emerald); transform: scale(1.1); transition: 0.2s; }
 
-/* MODEL H EKSTRA MAKSIMAL (HALAMAN 3) */
+/* MODEL H MAKSIMAL (HALAMAN 3 - FONT TEBAL SEPERTI PREVIEW) */
 .ripple {
-    position: absolute;
-    width: 54vh;
-    height: 54vh;
-    border-radius: 50%;
-    border: 6px solid var(--accent-emerald);
-    opacity: 0;
+    position: absolute; width: 54vh; height: 54vh; border-radius: 50%;
+    border: 6px solid var(--accent-emerald); opacity: 0;
 }
 .ripple.active-wave { animation: rippleWave 1.4s ease-out infinite; }
 .ripple:nth-child(2).active-wave { animation-delay: 0.45s; border-color: var(--accent-cyan); }
@@ -248,20 +242,15 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 @keyframes rippleWave { 0% { transform: scale(0.75); opacity: 0.95; } 100% { transform: scale(1.75); opacity: 0; } }
 
 .num-h {
-    position: relative;
-    z-index: 2;
-    font-family: 'Segoe UI', 'Arial Black', Impact, sans-serif !important;
-    font-size: 62vh; /* Angka raksasa memenuhi layar */
-    font-weight: 900;
-    color: var(--text-bright);
-    text-shadow: 0 0 50px var(--accent-emerald);
+    position: relative; z-index: 2;
+    font-family: 'Segoe UI', 'Arial Black', Impact, sans-serif;
+    font-size: 62vh; font-weight: 900;
+    color: var(--text-bright); text-shadow: 0 0 50px var(--accent-emerald);
     line-height: 0.85;
 }
 .num-h.locked-final {
-    color: var(--accent-amber);
-    text-shadow: 0 0 75px var(--accent-amber);
-    transform: scale(1.06);
-    transition: 0.2s;
+    color: var(--accent-amber); text-shadow: 0 0 75px var(--accent-amber);
+    transform: scale(1.06); transition: 0.2s;
 }
 
 .focus-bottom { width: 85%; max-width: 920px; text-align: center; }
