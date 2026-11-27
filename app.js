@@ -9,9 +9,9 @@ let isSpinning = false;
 let audioCtx = null;
 
 // =========================================
-// MUSIK MP3 LOKAL & FANFARE KEMENANGAN
+// MUSIK MP3 LOKAL (OVERLAY 2, OVERLAY 3 & MUSIK AKHIR)
 // =========================================
-function playTone(freq, duration, type = 'triangle', vol = 0.09, delay = 0) {
+function playClickTone() {
     try {
         if (!audioCtx) {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -19,34 +19,21 @@ function playTone(freq, duration, type = 'triangle', vol = 0.09, delay = 0) {
         }
         if (!audioCtx) return;
         if (audioCtx.state === 'suspended') audioCtx.resume();
-        const start = audioCtx.currentTime + delay;
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, start);
-        gain.gain.setValueAtTime(vol, start);
-        gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(660, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.08);
         osc.connect(gain);
         gain.connect(audioCtx.destination);
-        osc.start(start);
-        osc.stop(start + duration);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.08);
     } catch (e) {}
 }
 
-function playVictoryFanfare() {
-    const chord = [
-        { f: 523.25, d: 0.14, t: 0.00 },
-        { f: 659.25, d: 0.14, t: 0.12 },
-        { f: 783.99, d: 0.14, t: 0.24 },
-        { f: 1046.50, d: 0.55, t: 0.36 },
-        { f: 523.25, d: 0.55, t: 0.36 },
-        { f: 783.99, d: 0.55, t: 0.36 }
-    ];
-    chord.forEach(n => playTone(n.f, n.d, 'triangle', 0.11, n.t));
-}
-
 function startOverlayMusic(stageType) {
-    stopOverlayMusic();
+    stopAllAudio();
     const audioId = stageType === 'D' ? 'bgMusicStage1' : 'bgMusicStage2';
     const audio = document.getElementById(audioId);
     if (audio) {
@@ -55,8 +42,17 @@ function startOverlayMusic(stageType) {
     }
 }
 
-function stopOverlayMusic() {
-    ['bgMusicStage1', 'bgMusicStage2'].forEach(id => {
+function playEndMusic() {
+    stopAllAudio();
+    const endAudio = document.getElementById('bgMusicEnd');
+    if (endAudio) {
+        endAudio.currentTime = 0;
+        endAudio.play().catch(() => {});
+    }
+}
+
+function stopAllAudio() {
+    ['bgMusicStage1', 'bgMusicStage2', 'bgMusicEnd'].forEach(id => {
         const audio = document.getElementById(id);
         if (audio) {
             audio.pause();
@@ -124,7 +120,7 @@ function addCandidate(e) {
     input.value = '';
     input.focus();
     stage1Completed = false;
-    playTone(660, 0.08, 'sine', 0.08);
+    playClickTone();
     renderAttendanceList();
 }
 
@@ -165,7 +161,6 @@ function resetAllData() {
         renderAttendanceList();
     }
 }
-
 // =========================================
 // OVERLAY LAYAR PENUH (MODEL D & MODEL H)
 // =========================================
@@ -205,7 +200,7 @@ function openFocusOverlay(stageLabel, candidateName, durationSec, stageType) {
 }
 
 function lockFocusOverlay(finalDigit, stageType) {
-    stopOverlayMusic();
+    playEndMusic(); // Hentikan musik putar & putar musik-akhir.mp3
     document.getElementById('focusStatusText').textContent = 'TERKUNCI!';
     document.getElementById('focusCountdownText').textContent = '0.0';
     document.getElementById('focusCountdownBar').style.width = '0%';
@@ -224,11 +219,12 @@ function lockFocusOverlay(finalDigit, stageType) {
 }
 
 function closeFocusOverlay() {
-    stopOverlayMusic();
+    stopAllAudio(); // Musik akhir otomatis berhenti saat overlay tutup
     document.getElementById('modelDContainer').classList.add('hidden');
     document.getElementById('modelHContainer').classList.add('hidden');
     document.getElementById('focusOverlay').classList.add('hidden');
 }
+
 // =========================================
 // HALAMAN 2: UNDIAN 1 (MODEL D - 5 DETIK)
 // =========================================
@@ -298,7 +294,7 @@ function startStage1Spin() {
     document.getElementById('btnStartStage1').disabled = true;
     openFocusOverlay(`UNDIAN TAHAP 1 • HADIR #${activeCand.attendanceOrder}`, activeCand.name, 5.0, 'D');
 
-    const duration = 6000; // Ubah durasi Undian 1 di sini (dalam milidetik)
+    const duration = 5000;
     const startTime = Date.now();
 
     countdownTimer = setInterval(() => {
@@ -323,7 +319,6 @@ function startStage1Spin() {
 
         lockFocusOverlay(chosenTurn, 'D');
         document.getElementById('stage1SlotDisplay').textContent = `${chosenTurn}`;
-        playVictoryFanfare();
 
         candidates[stage1DrawerIdx].drawTurnOrder = chosenTurn;
         candidates[stage1DrawerIdx].officialNumber = null;
@@ -339,13 +334,14 @@ function startStage1Spin() {
 }
 
 function resetStage1Only() {
-    clearInterval(counterInterval); clearInterval(countdownTimer);
-    isStage1Spinning = false; stage1Completed = false;
+    clearInterval(counterInterval);
+    clearInterval(countdownTimer);
+    isStage1Spinning = false;
+    stage1Completed = false;
     closeFocusOverlay();
     candidates.forEach(c => { c.drawTurnOrder = null; c.officialNumber = null; });
     renderStage1Page();
 }
-
 // =========================================
 // HALAMAN 3: UNDIAN 2 (MODEL H - 15 DETIK)
 // =========================================
@@ -410,7 +406,7 @@ function startCounter() {
     document.getElementById('btnStartCounter').disabled = true;
     openFocusOverlay(`UNDIAN NOMOR URUT • GILIRAN #${activeCand.drawTurnOrder}`, activeCand.name, 15.0, 'H');
 
-    const totalDuration = 15000; // Ubah durasi Undian 2 di sini (dalam milidetik)
+    const totalDuration = 15000;
     const startTime = Date.now();
 
     countdownTimer = setInterval(() => {
@@ -435,7 +431,6 @@ function startCounter() {
 
         lockFocusOverlay(chosenNumber, 'H');
         document.getElementById('counterDisplay').textContent = `${chosenNumber}`;
-        playVictoryFanfare();
 
         activeCand.officialNumber = chosenNumber;
         availableNumbers.splice(finalIdx, 1);
