@@ -298,7 +298,7 @@ function startStage1Spin() {
     document.getElementById('btnStartStage1').disabled = true;
     openFocusOverlay(`UNDIAN TAHAP 1 • HADIR #${activeCand.attendanceOrder}`, activeCand.name, 5.0, 'D');
 
-    const duration = 5000; // Ubah durasi Undian 1 di sini (dalam milidetik)
+    const duration = 6000; // Ubah durasi Undian 1 di sini (dalam milidetik)
     const startTime = Date.now();
 
     countdownTimer = setInterval(() => {
