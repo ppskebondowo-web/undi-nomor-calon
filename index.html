@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pengundian Nomor Urut Calon Kepala Desa Kebondowo 2026</title>
-    <link rel="stylesheet" href="style.css?v=13">
+    <link rel="stylesheet" href="style.css?v=20">
 </head>
 <body class="bg-grid">
 
@@ -28,11 +28,9 @@
                     </select>
                 </div>
 
-                <!-- Tombol Ganti Tema Terang / Gelap -->
                 <button type="button" id="btnThemeToggle" onclick="toggleTheme()" title="Ganti Tema Terang/Gelap">
                     ☀️ Tema Terang
                 </button>
-
             </div>
         </div>
 
@@ -211,7 +209,7 @@
         </section>
     </main>
 
-    <!-- OVERLAY LAYAR PENUH (TERPISAH ANTARA MODEL D DAN MODEL H) -->
+    <!-- OVERLAY LAYAR PENUH (MODEL D UNTUK HAL. 2 & MODEL H MAKSIMAL UNTUK HAL. 3) -->
     <div id="focusOverlay" class="focus-overlay hidden">
         <div class="focus-content">
             <div class="focus-top">
@@ -219,19 +217,19 @@
                 <h2 id="focusCandidateName" class="font-futuristic">NAMA CALON</h2>
             </div>
 
-            <!-- Model D: Hanya Tampil di Halaman 2 -->
+            <!-- Model D: Halaman 2 -->
             <div id="modelDContainer" class="model-stage hidden">
                 <div id="diamondOuter" class="diamond-outer"></div>
                 <div class="diamond-inner"></div>
                 <div id="digitModelD" class="font-futuristic num-d">0</div>
             </div>
 
-            <!-- Model H: Hanya Tampil di Halaman 3 -->
+            <!-- Model H: Halaman 3 -->
             <div id="modelHContainer" class="model-stage hidden">
                 <div id="ripple1" class="ripple"></div>
                 <div id="ripple2" class="ripple"></div>
                 <div id="ripple3" class="ripple"></div>
-                <div id="digitModelH" class="font-futuristic num-h">0</div>
+                <div id="digitModelH" class="num-h">0</div>
             </div>
 
             <div class="focus-bottom">
@@ -241,7 +239,7 @@
                 </div>
                 <div class="progress-track focus-track">
                     <div id="focusCountdownBar" class="progress-fill"></div>
-                </div>       
+                </div>
             </div>
         </div>
     </div>
@@ -249,9 +247,11 @@
     <footer>
         Panitia Pemilihan Kepala Desa Kebondowo Tahun 2026 • Sistem Pengundian Digital Transparan
     </footer>
-        <!-- MUSIK LATAR SAAT OVERLAY BERPUTAR -->
+
+    <!-- MUSIK MP3 LOKAL UNTUK OVERLAY 2 & OVERLAY 3 -->
     <audio id="bgMusicStage1" src="musik-undian-1.mp3" loop preload="auto"></audio>
     <audio id="bgMusicStage2" src="musik-undian-2.mp3" loop preload="auto"></audio>
-    <script src="app.js?v=17"></script>
+
+    <script src="app.js?v=20"></script>
 </body>
 </html>
